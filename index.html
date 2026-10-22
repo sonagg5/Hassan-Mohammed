@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>حسن | مطور برمجيات وصانع ألعاب</title>
+<meta name="description" content="معرض أعمال حسن — تطوير برمجيات، ألعاب، وتصميم">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ======================================================
+   0. RESET + TOKENS
+   ====================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root{
+  --c-primary: #7c5cff;
+  --c-primary-2: #22d3ee;
+  --c-secondary: #ff3d81;
+  --c-bg: #090b12;
+  --c-bg-elevated: #0e1220;
+  --c-card: #11152280;
+  --c-card-solid: #131728;
+  --c-border: #242a44;
+  --c-text: #e9ecf6;
+  --c-text-muted: #8991ac;
+  --c-text-dim: #5c6482;
+  --font-scale: 1;
+  --radius: 18px;
+  --glow: 0.55;
+  --font-body: 'Cairo', 'Segoe UI', sans-serif;
+  --font-mono: 'Fira Code', 'Consolas', monospace;
+  --shadow-soft: 0 10px 40px -12px rgba(0,0,0,.6);
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+
+body{
+  font-family: var(--font-body);
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-size: calc(16px * var(--font-scale));
+  line-height: 1.75;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before{
+  content:"";
+  position: fixed; inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(700px 500px at 85% -5%, color-mix(in srgb, var(--c-primary) 22%, transparent), transparent 60%),
+    radial-gradient(600px 500px at 5% 15%, color-mix(in srgb, var(--c-primary-2) 16%, transparent), transparent 60%),
+    radial-gradient(800px 600px at 50% 110%, color-mix(in srgb, var(--c-secondary) 12%, transparent), transparent 60%),
+    var(--c-bg);
+  background-attachment: fixed;
+}
+body::after{
+  content:"";
+  position: fixed; inset:0; z-index:-1;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--c-text) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--c-text) 3%, transparent) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at 50% 0%, black, transparent 75%);
+  opacity: .35;
+}
+
+a{ color: inherit; text-decoration: none; }
+ul{ list-style: none; }
+img{ max-width: 100%; display: block; }
+button{ font-family: inherit; cursor: pointer; }
+input, textarea, select{ font-family: inherit; }
+
+::selection{ background: var(--c-primary); color: #fff; }
+
+::-webkit-scrollbar{ width: 10px; }
+::-webkit-scrollbar-track{ background: var(--c-bg); }
+::-webkit-scrollbar-thumb{ background: linear-gradient(var(--c-primary), var(--c-primary-2)); border-radius: 10px; }
+
+.container{ width: min(1180px, 92%); margin-inline: auto; }
+.visually-hidden{ position:absolute; width:1px;height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+.grad-text{
+  background: linear-gradient(95deg, var(--c-primary-2), var(--c-primary) 55%, var(--c-secondary));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.btn{
+  display: inline-flex; align-items:center; gap:.55em; justify-content:center;
+  padding: .9em 1.7em; border-radius: calc(var(--radius) * 0.7);
+  font-weight: 700; font-size: .96rem; border: 1px solid transparent;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+  white-space: nowrap;
+}
+.btn-primary{
+  background: linear-gradient(120deg, var(--c-primary), var(--c-primary-2));
+  color: #06070d;
+  box-shadow: 0 8px 30px -8px color-mix(in srgb, var(--c-primary) calc(var(--glow) * 100%), transparent);
+}
+.btn-primary:hover{ transform: translateY(-3px); box-shadow: 0 14px 38px -6px color-mix(in srgb, var(--c-primary) calc(var(--glow) * 120%), transparent); }
+.btn-ghost{
+  background: color-mix(in srgb, var(--c-text) 4%, transparent);
+  border-color: var(--c-border); color: var(--c-text);
+  backdrop-filter: blur(8px);
+}
+.btn-ghost:hover{ border-color: var(--c-primary-2); background: color-mix(in srgb, var(--c-primary-2) 10%, transparent); transform: translateY(-3px); }
+.btn-sm{ padding: .5em 1em; font-size: .82rem; border-radius: 10px; }
+.btn-danger{ background: color-mix(in srgb, #ff3d5a 15%, transparent); color:#ff8496; border:1px solid #ff3d5a55; }
+.btn-danger:hover{ background: #ff3d5a; color:#fff; }
+.btn-icon{ width: 40px; height: 40px; border-radius: 50%; display:inline-flex; align-items:center; justify-content:center; padding:0; }
+.btn:disabled{ opacity:.45; cursor:not-allowed; transform:none !important; }
+
+.card{
+  background: var(--c-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.section{ padding: 7rem 0; position: relative; }
+.section-head{ margin-bottom: 3rem; max-width: 640px; }
+.section-tag{ color: var(--c-primary-2); font-weight:700; font-size:.85rem; letter-spacing:.02em; margin-bottom:.6rem; display:block; }
+.section-title{ font-size: clamp(1.7rem, 3.2vw, 2.6rem); font-weight: 800; line-height:1.25; }
+.section-sub{ color: var(--c-text-muted); margin-top: .9rem; font-size: 1.02rem; max-width: 60ch; }
+
+[data-reveal]{ opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+[data-reveal].in-view{ opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  html{ scroll-behavior:auto; }
+}
+
+/* ======================================================
+   1. LOADING SCREEN
+   ====================================================== */
+#loading-screen{
+  position: fixed; inset:0; z-index: 9999;
+  background: var(--c-bg);
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1.4rem;
+  transition: opacity .6s var(--ease), visibility .6s var(--ease);
+}
+#loading-screen.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+.loader-mark{
+  width: 64px; height:64px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--c-primary), var(--c-primary-2));
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:1.6rem; color:#06070d;
+  animation: pulse-mark 1.4s ease-in-out infinite;
+}
+@keyframes pulse-mark{ 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.08); } }
+.loader-bar{ width: 200px; height:3px; background: var(--c-border); border-radius: 3px; overflow:hidden; }
+.loader-bar span{ display:block; height:100%; width:40%; background: linear-gradient(90deg, var(--c-primary), var(--c-primary-2)); animation: loader-run 1.1s ease-in-out infinite; }
+@keyframes loader-run{ 0%{ transform: translateX(-100%);} 100%{ transform: translateX(350%);} }
+
+/* ======================================================
+   2. NAVBAR
+   ====================================================== */
+.navbar{
+  position: fixed; top:0; inset-inline:0; z-index: 500;
+  padding: 1.1rem 0;
+  transition: background .4s var(--ease), border-color .4s var(--ease), padding .4s var(--ease);
+  border-bottom: 1px solid transparent;
+}
+.navbar.scrolled{
+  background: color-mix(in srgb, var(--c-bg) 78%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom-color: var(--c-border);
+  padding: .7rem 0;
+}
+.navbar .container{ display:flex; align-items:center; justify-content:space-between; gap: 1rem; }
+.brand{ display:flex; align-items:center; gap:.6rem; font-weight:800; font-size:1.15rem; }
+.brand-mark{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--c-primary),var(--c-primary-2)); display:flex; align-items:center; justify-content:center; color:#06070d; font-weight:900; }
+.nav-links{ display:flex; align-items:center; gap: 2rem; }
+.nav-links a{ font-weight:600; color: var(--c-text-muted); position:relative; padding: .3rem 0; transition: color .3s; }
+.nav-links a::after{ content:""; position:absolute; right:0; bottom:-2px; width:0; height:2px; background: linear-gradient(90deg,var(--c-primary-2),var(--c-primary)); transition: width .3s var(--ease); }
+.nav-links a:hover, .nav-links a.active{ color: var(--c-text); }
+.nav-links a:hover::after, .nav-links a.active::after{ width:100%; }
+.nav-actions{ display:flex; align-items:center; gap:.6rem; }
+.nav-toggle{ display:none; background:none; border:1px solid var(--c-border); color:var(--c-text); width:42px; height:42px; border-radius:10px; align-items:center; justify-content:center; }
+
+@media (max-width: 880px){
+  .nav-links{
+    position: fixed; top: 66px; inset-inline:0; bottom:0;
+    background: color-mix(in srgb, var(--c-bg) 96%, transparent);
+    backdrop-filter: blur(20px);
+    flex-direction:column; justify-content:center; gap: 1.8rem;
+    transform: translateY(-8px); opacity:0; pointer-events:none;
+    transition: opacity .35s var(--ease), transform .35s var(--ease);
+  }
+  .nav-links.open{ opacity:1; pointer-events:auto; transform:none; }
+  .nav-links a{ font-size:1.3rem; }
+  .nav-toggle{ display:inline-flex; }
+}
+
+/* ======================================================
+   3. HERO
+   ====================================================== */
+.hero{ padding: 10rem 0 6rem; position:relative; min-height: 92vh; display:flex; align-items:center; }
+.hero .container{ display:grid; grid-template-columns: 1.15fr .85fr; gap: 3rem; align-items:center; }
+.hero-eyebrow{ display:inline-flex; align-items:center; gap:.5rem; padding:.5em 1em; border-radius:100px; border:1px solid var(--c-border); background: color-mix(in srgb, var(--c-primary) 8%, transparent); font-size:.85rem; font-weight:700; color: var(--c-primary-2); margin-bottom:1.4rem; }
+.hero-eyebrow .dot{ width:8px; height:8px; border-radius:50%; background: #4ade80; box-shadow: 0 0 10px #4ade80; }
+.hero-title{ font-size: clamp(2.3rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.18; }
+.hero-role{ font-size: clamp(1.1rem, 2vw, 1.4rem); color: var(--c-text-muted); font-weight:600; margin-top: 1rem; }
+.hero-bio{ margin-top: 1.4rem; color: var(--c-text-muted); max-width: 56ch; font-size: 1.05rem; }
+.hero-actions{ display:flex; gap: 1rem; margin-top: 2.3rem; flex-wrap:wrap; }
+.hero-stats{ display:flex; gap: 2.2rem; margin-top: 3rem; flex-wrap:wrap; }
+.hero-stat b{ font-size: 1.6rem; font-weight:900; display:block; }
+.hero-stat span{ color: var(--c-text-dim); font-size:.85rem; }
+
+.hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
+.hero-orb{
+  position:absolute; width: 340px; height:340px; border-radius:50%;
+  background: conic-gradient(from 180deg, var(--c-primary), var(--c-primary-2), var(--c-secondary), var(--c-primary));
+  filter: blur(70px); opacity: calc(var(--glow) * .55);
+  animation: orb-spin 12s linear infinite;
+}
+@keyframes orb-spin{ to{ transform: rotate(360deg); } }
+.profile-frame{
+  position: relative; width: min(320px, 78vw); aspect-ratio: 1; border-radius: 32px; overflow:hidden;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 25px 60px -15px color-mix(in srgb, var(--c-primary) calc(var(--glow) * 100%), transparent);
+}
+.profile-frame img{ width:100%; height:100%; object-fit: cover; }
+.profile-frame .ph{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:4rem; font-weight:900; background: linear-gradient(135deg, var(--c-card-solid), var(--c-bg-elevated)); color: var(--c-text-dim); }
+
+@media (max-width: 900px){
+  .hero .container{ grid-template-columns: 1fr; text-align:center; }
+  .hero-actions, .hero-stats{ justify-content:center; }
+  .hero-visual{ order:-1; }
+}
+
+/* ======================================================
+   4. PROJECTS
+   ====================================================== */
+.toolbar{ display:flex; flex-wrap:wrap; gap:1rem; align-items:center; justify-content:space-between; margin-bottom: 2.4rem; }
+.search-box{ position:relative; flex:1; min-width: 220px; max-width: 340px; }
+.search-box input{
+  width:100%; padding: .8em 1em .8em 1em; padding-inline-start: 2.6em;
+  background: var(--c-card-solid); border:1px solid var(--c-border); border-radius: 12px; color:var(--c-text); outline:none;
+  transition: border-color .3s;
+}
+.search-box input:focus{ border-color: var(--c-primary-2); }
+.search-box svg{ position:absolute; inset-inline-start: .85em; top:50%; transform:translateY(-50%); opacity:.5; }
+.filter-chips{ display:flex; gap:.6rem; flex-wrap:wrap; }
+.chip{
+  padding: .5em 1.1em; border-radius: 100px; border:1px solid var(--c-border); background: var(--c-card-solid);
+  font-size:.85rem; font-weight:700; color: var(--c-text-muted); transition: all .3s var(--ease);
+}
+.chip.active, .chip:hover{ color:#06070d; background: linear-gradient(120deg,var(--c-primary-2),var(--c-primary)); border-color:transparent; }
+
+.projects-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.6rem; }
+.project-card{
+  position:relative; display:flex; flex-direction:column; overflow:hidden;
+  transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s var(--ease);
+}
+.project-card:hover{ transform: translateY(-8px); border-color: color-mix(in srgb, var(--c-primary-2) 50%, var(--c-border)); box-shadow: 0 20px 45px -18px color-mix(in srgb, var(--c-primary) calc(var(--glow)*100%), transparent); }
+.project-thumb{ position:relative; aspect-ratio: 16/10; overflow:hidden; background: linear-gradient(135deg, var(--c-card-solid), var(--c-bg-elevated)); display:flex; align-items:center; justify-content:center; }
+.project-thumb img{ width:100%; height:100%; object-fit:cover; transition: transform .6s var(--ease); }
+.project-card:hover .project-thumb img{ transform: scale(1.06); }
+.project-thumb .type-icon{ font-size: 2.6rem; opacity:.35; }
+.project-type-badge{
+  position:absolute; top:.8rem; inset-inline-start:.8rem; padding:.35em .8em; border-radius:100px;
+  background: color-mix(in srgb, var(--c-bg) 55%, transparent); backdrop-filter: blur(8px); border:1px solid var(--c-border);
+  font-size:.72rem; font-weight:700; display:flex; align-items:center; gap:.35em;
+}
+.admin-card-actions{ position:absolute; top:.8rem; inset-inline-end:.8rem; display:flex; gap:.4rem; opacity:0; transition:opacity .3s; }
+.project-card:hover .admin-card-actions{ opacity:1; }
+.admin-card-actions button{
+  width:32px; height:32px; border-radius:9px; border:1px solid var(--c-border); background: color-mix(in srgb, var(--c-bg) 70%, transparent);
+  backdrop-filter: blur(6px); display:flex; align-items:center; justify-content:center; color:var(--c-text); transition: all .25s;
+}
+.admin-card-actions button:hover{ background: var(--c-primary-2); color:#06070d; }
+.admin-card-actions button.del:hover{ background:#ff3d5a; color:#fff; }
+.project-body{ padding: 1.3rem 1.4rem 1.5rem; display:flex; flex-direction:column; gap:.6rem; flex:1; }
+.project-meta-row{ display:flex; gap:.5rem; font-size:.76rem; color: var(--c-text-dim); flex-wrap:wrap; }
+.project-cat-tag{ color: var(--c-primary-2); font-weight:700; }
+.project-title{ font-weight:800; font-size:1.12rem; }
+.project-desc{ color: var(--c-text-muted); font-size:.92rem; flex:1; }
+.project-foot{ display:flex; gap:.6rem; margin-top:.6rem; }
+.project-foot .btn{ flex:1; }
+
+.empty-state{ text-align:center; padding: 4.5rem 1rem; color: var(--c-text-dim); grid-column: 1/-1; }
+.empty-state .ico{ font-size: 3rem; margin-bottom: 1rem; opacity:.5; }
+.empty-state h4{ color: var(--c-text-muted); font-size:1.15rem; margin-bottom:.4rem; }
+
+/* ======================================================
+   5. SKILLS
+   ====================================================== */
+.skills-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1.2rem; }
+.skill-card{ padding: 1.4rem; display:flex; flex-direction:column; gap:.8rem; transition: transform .4s var(--ease), border-color .4s; }
+.skill-card:hover{ transform: translateY(-5px); border-color: color-mix(in srgb, var(--c-primary-2) 45%, var(--c-border)); }
+.skill-top{ display:flex; align-items:center; justify-content:space-between; }
+.skill-name{ font-weight:700; }
+.skill-pct{ color: var(--c-primary-2); font-weight:800; font-size:.85rem; }
+.skill-bar{ height:7px; border-radius:10px; background: var(--c-border); overflow:hidden; }
+.skill-bar span{ display:block; height:100%; border-radius:10px; background: linear-gradient(90deg,var(--c-primary),var(--c-primary-2)); width:0; transition: width 1.1s var(--ease); }
+.admin-inline-actions{ display:flex; gap:.35rem; align-self:flex-end; opacity:0; transition:opacity .3s; }
+.skill-card:hover .admin-inline-actions{ opacity:1; }
+.admin-inline-actions button{ width:26px; height:26px; border-radius:7px; border:1px solid var(--c-border); background:transparent; color:var(--c-text-muted); font-size:.7rem; display:flex; align-items:center; justify-content:center; }
+.admin-inline-actions button:hover{ color:var(--c-primary-2); border-color: var(--c-primary-2); }
+
+/* ======================================================
+   6. CUSTOM SECTIONS
+   ====================================================== */
+.custom-section-card{ padding: 2rem; margin-bottom: 1.4rem; position:relative; }
+.custom-section-card h3{ font-size: 1.3rem; font-weight:800; margin-bottom:.8rem; }
+.custom-section-card p{ color: var(--c-text-muted); white-space: pre-line; }
+.custom-section-admin{ position:absolute; top:1.2rem; inset-inline-end:1.2rem; display:flex; gap:.4rem; }
+
+/* ======================================================
+   7. CONTACT
+   ====================================================== */
+.contact-wrap{ display:grid; grid-template-columns: .9fr 1.1fr; gap: 2.5rem; }
+.contact-info-card{ padding: 2rem; display:flex; flex-direction:column; gap:1.4rem; height:fit-content; }
+.contact-info-item{ display:flex; align-items:center; gap: .9rem; }
+.contact-info-item .ic{ width:44px; height:44px; border-radius:12px; background: color-mix(in srgb, var(--c-primary) 14%, transparent); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.contact-info-item b{ display:block; font-size:.95rem; }
+.contact-info-item span{ color: var(--c-text-dim); font-size:.84rem; }
+.contact-form{ padding: 2rem; display:flex; flex-direction:column; gap:1.2rem; }
+.field{ display:flex; flex-direction:column; gap:.5rem; }
+.field label{ font-size:.88rem; font-weight:700; color: var(--c-text-muted); }
+.field input, .field textarea{
+  padding: .85em 1em; background: var(--c-bg-elevated); border:1px solid var(--c-border); border-radius: 12px; color: var(--c-text); outline:none;
+  transition: border-color .3s; resize: vertical;
+}
+.field input:focus, .field textarea:focus{ border-color: var(--c-primary-2); }
+@media (max-width: 880px){ .contact-wrap{ grid-template-columns: 1fr; } }
+
+/* ======================================================
+   8. FOOTER
+   ====================================================== */
+footer{ padding: 3rem 0 2.4rem; border-top: 1px solid var(--c-border); margin-top: 3rem; }
+footer .container{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.footer-links{ display:flex; gap:1.2rem; }
+.footer-links a{ color: var(--c-text-dim); transition: color .3s; }
+.footer-links a:hover{ color: var(--c-primary-2); }
+footer p{ color: var(--c-text-dim); font-size:.88rem; }
+
+/* ======================================================
+   9. BACK TO TOP
+   ====================================================== */
+#back-to-top{
+  position: fixed; bottom: 1.8rem; inset-inline-end: 1.8rem; z-index: 300;
+  width:48px; height:48px; border-radius:50%; border:1px solid var(--c-border);
+  background: color-mix(in srgb, var(--c-bg) 70%, transparent); backdrop-filter: blur(10px);
+  display:flex; align-items:center; justify-content:center; color: var(--c-text);
+  opacity:0; transform: translateY(14px); pointer-events:none; transition: all .35s var(--ease);
+}
+#back-to-top.show{ opacity:1; transform:none; pointer-events:auto; }
+#back-to-top:hover{ background: linear-gradient(135deg,var(--c-primary),var(--c-primary-2)); color:#06070d; border-color:transparent; }
+
+/* ======================================================
+   10. ADMIN FAB / BAR
+   ====================================================== */
+#admin-fab{
+  position: fixed; bottom: 1.8rem; inset-inline-start: 1.8rem; z-index: 300;
+  width:52px; height:52px; border-radius:50%; border:none;
+  background: linear-gradient(135deg,var(--c-primary),var(--c-primary-2)); color:#06070d;
+  display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow-soft);
+  transition: transform .3s var(--ease);
+}
+#admin-fab:hover{ transform: scale(1.08) rotate(8deg); }
+#admin-bar{
+  position: fixed; top:0; inset-inline:0; z-index: 600; display:none;
+  background: linear-gradient(90deg, #151a2e, #171226); border-bottom:1px solid var(--c-border);
+  padding: .6rem 0;
+}
+#admin-bar.show{ display:block; }
+#admin-bar .container{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+#admin-bar .adm-left{ display:flex; align-items:center; gap:.7rem; font-weight:700; font-size:.9rem; }
+#admin-bar .adm-badge{ background: linear-gradient(120deg,var(--c-primary),var(--c-primary-2)); color:#06070d; padding:.25em .8em; border-radius:100px; font-size:.72rem; }
+#admin-bar .adm-tabs{ display:flex; gap:.4rem; flex-wrap:wrap; }
+#admin-bar .adm-tabs button{ padding:.5em 1em; border-radius:9px; border:1px solid var(--c-border); background:transparent; color:var(--c-text-muted); font-size:.82rem; font-weight:700; transition: all .25s; }
+#admin-bar .adm-tabs button:hover, #admin-bar .adm-tabs button.active{ background: color-mix(in srgb, var(--c-primary-2) 16%, transparent); color: var(--c-text); border-color: var(--c-primary-2); }
+body.admin-on .navbar{ top: 52px; }
+body.admin-on .hero{ padding-top: 12.5rem; }
+body.admin-on #back-to-top{ bottom: 5.5rem; }
+
+/* ======================================================
+   11. TOASTS
+   ====================================================== */
+#toast-stack{ position: fixed; bottom: 1.8rem; inset-inline: 0; z-index: 9998; display:flex; flex-direction:column; align-items:center; gap:.7rem; pointer-events:none; }
+.toast{
+  pointer-events:auto; display:flex; align-items:center; gap:.7rem; padding: .9em 1.3em; border-radius:12px;
+  background: var(--c-card-solid); border:1px solid var(--c-border); box-shadow: var(--shadow-soft);
+  font-size:.9rem; font-weight:600; min-width: 220px; max-width: 90vw;
+  animation: toast-in .35s var(--ease);
+}
+@keyframes toast-in{ from{ opacity:0; transform: translateY(16px) scale(.95); } to{ opacity:1; transform:none; } }
+.toast.out{ animation: toast-out .3s var(--ease) forwards; }
+@keyframes toast-out{ to{ opacity:0; transform: translateY(10px) scale(.95); } }
+.toast .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.toast.success .dot{ background:#4ade80; box-shadow:0 0 8px #4ade80; }
+.toast.error .dot{ background:#ff5a72; box-shadow:0 0 8px #ff5a72; }
+.toast.info .dot{ background: var(--c-primary-2); box-shadow:0 0 8px var(--c-primary-2); }
+
+/* ======================================================
+   12. MODALS
+   ====================================================== */
+.modal-overlay{
+  position: fixed; inset:0; z-index: 2000; background: rgba(4,5,10,.72); backdrop-filter: blur(6px);
+  display:flex; align-items:center; justify-content:center; padding: 2rem 1rem;
+  opacity:0; pointer-events:none; transition: opacity .3s var(--ease);
+}
+.modal-overlay.show{ opacity:1; pointer-events:auto; }
+.modal-box{
+  background: var(--c-card-solid); border:1px solid var(--c-border); border-radius: var(--radius);
+  width: 100%; max-width: 560px; max-height: 88vh; overflow-y:auto; box-shadow: 0 30px 70px -20px rgba(0,0,0,.7);
+  transform: translateY(24px) scale(.97); transition: transform .35s var(--ease);
+}
+.modal-overlay.show .modal-box{ transform:none; }
+.modal-box.wide{ max-width: 900px; }
+.modal-box.viewer{ max-width: 1100px; width: 96%; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding: 1.3rem 1.5rem; border-bottom:1px solid var(--c-border); position:sticky; top:0; background: var(--c-card-solid); z-index:2; }
+.modal-head h3{ font-size:1.2rem; font-weight:800; }
+.modal-close{ width:34px; height:34px; border-radius:9px; border:1px solid var(--c-border); background:transparent; color:var(--c-text-muted); display:flex; align-items:center; justify-content:center; }
+.modal-close:hover{ color:#fff; background: #ff3d5a; border-color:transparent; }
+.modal-body{ padding: 1.5rem; }
+.modal-foot{ padding: 1.2rem 1.5rem; border-top:1px solid var(--c-border); display:flex; gap:.8rem; justify-content:flex-end; position:sticky; bottom:0; background: var(--c-card-solid); }
+
+.form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+.form-grid .full{ grid-column: 1/-1; }
+@media (max-width:600px){ .form-grid{ grid-template-columns: 1fr; } }
+
+.color-field{ display:flex; align-items:center; gap:.7rem; }
+.color-field input[type=color]{ width:44px; height:38px; border-radius:9px; border:1px solid var(--c-border); background:none; padding:2px; }
+.range-row{ display:flex; align-items:center; gap:.8rem; }
+.range-row input[type=range]{ flex:1; accent-color: var(--c-primary-2); }
+.range-row span{ min-width: 42px; text-align:center; font-size:.82rem; color: var(--c-text-muted); font-family: var(--font-mono); }
+
+.upload-drop{
+  border: 1.5px dashed var(--c-border); border-radius: 14px; padding: 1.6rem; text-align:center; cursor:pointer;
+  transition: border-color .3s, background .3s; color: var(--c-text-muted);
+}
+.upload-drop:hover, .upload-drop.drag{ border-color: var(--c-primary-2); background: color-mix(in srgb, var(--c-primary-2) 6%, transparent); }
+.upload-drop .filename{ margin-top:.6rem; font-family: var(--font-mono); font-size:.82rem; color: var(--c-primary-2); word-break: break-all; }
+
+.confirm-box p{ color: var(--c-text-muted); margin-bottom:.4rem; }
+.confirm-box .warn-name{ color:#ff8496; font-weight:700; }
+
+/* dashboard stats */
+.stats-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.6rem; }
+.stat-card{ padding: 1.2rem; text-align:center; }
+.stat-card b{ font-size:1.8rem; font-weight:900; display:block; }
+.stat-card span{ font-size:.8rem; color: var(--c-text-dim); }
+
+.admin-table-wrap{ overflow-x:auto; }
+table.admin-table{ width:100%; border-collapse: collapse; font-size:.88rem; }
+table.admin-table th, table.admin-table td{ padding: .8em .7em; text-align: right; border-bottom: 1px solid var(--c-border); }
+table.admin-table th{ color: var(--c-text-dim); font-weight:700; font-size:.78rem; }
+table.admin-table tr:hover td{ background: color-mix(in srgb, var(--c-text) 2.5%, transparent); }
+.row-actions{ display:flex; gap:.4rem; }
+.row-actions button{ width:30px; height:30px; border-radius:8px; border:1px solid var(--c-border); background:transparent; color:var(--c-text-muted); display:flex; align-items:center; justify-content:center; }
+.row-actions button:hover{ color: var(--c-primary-2); border-color: var(--c-primary-2); }
+.row-actions button.del:hover{ color:#fff; background:#ff3d5a; border-color:transparent; }
+
+.tab-panel{ display:none; }
+.tab-panel.active{ display:block; }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; flex-wrap:wrap; gap:.7rem; }
+.panel-head h4{ font-size:1.15rem; font-weight:800; }
+
+/* project viewer specifics */
+.viewer-frame-wrap{ position:relative; background:#000; border-radius: 12px; overflow:hidden; min-height: 60vh; display:flex; }
+.viewer-frame-wrap iframe, .viewer-frame-wrap embed{ width:100%; height:70vh; border:none; }
+.viewer-toolbar{ display:flex; gap:.6rem; margin-bottom:.9rem; flex-wrap:wrap; }
+.code-viewer{ background:#080a11; border-radius:12px; padding:1.2rem; max-height:65vh; overflow:auto; font-family: var(--font-mono); font-size:.85rem; line-height:1.7; white-space:pre; direction:ltr; text-align:left; border:1px solid var(--c-border); }
+.image-viewer-wrap{ display:flex; align-items:center; justify-content:center; overflow:auto; max-height:70vh; background:#000; border-radius:12px; }
+.image-viewer-wrap img{ transition: transform .25s var(--ease); max-height:70vh; }
+.file-generic-view{ text-align:center; padding: 3rem 1rem; color: var(--c-text-muted); }
+.file-generic-view .ico{ font-size:3.4rem; margin-bottom:1rem; }
+
+.login-hint{ font-size:.78rem; color: var(--c-text-dim); background: var(--c-bg-elevated); padding:.8em 1em; border-radius:10px; margin-top:1rem; border:1px solid var(--c-border); line-height:1.8; }
+
+/* section reorder */
+.reorder-handle{ cursor: grab; color: var(--c-text-dim); }
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-mark">ح</div>
+  <div class="loader-bar"><span></span></div>
+</div>
+
+<div id="admin-bar">
+  <div class="container">
+    <div class="adm-left"><span class="adm-badge">وضع الإدارة</span><span id="admin-user-label"></span></div>
+    <div class="adm-tabs" id="admin-tabs">
+      <button data-tab="dashboard" class="active">لوحة المعلومات</button>
+      <button data-tab="projects">المشاريع</button>
+      <button data-tab="sections">الأقسام</button>
+      <button data-tab="skills">المهارات</button>
+      <button data-tab="texts">النصوص</button>
+      <button data-tab="design">التصميم</button>
+      <button data-tab="messages">الرسائل</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" id="btn-logout">تسجيل الخروج</button>
+  </div>
+</div>
+
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="#home" class="brand"><span class="brand-mark" id="brand-mark">ح</span><span id="brand-name">حسان</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#home">الرئيسية</a></li>
+      <li><a href="#projects">أعمالي</a></li>
+      <li><a href="#skills">مهاراتي</a></li>
+      <li><a href="#contact">تواصل معي</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-sm" onclick="scrollToId('contact')">تواصل معي</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="القائمة">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="hero" id="home">
+    <div class="container">
+      <div data-reveal>
+        <div class="hero-eyebrow"><span class="dot"></span> متاح للعمل على مشاريع جديدة</div>
+        <h1 class="hero-title">مرحبًا، أنا <span class="grad-text" id="hero-name">حسان</span></h1>
+        <p class="hero-role" id="hero-role">مطور برمجيات وصانع ألعاب</p>
+        <p class="hero-bio" id="hero-bio">أصنع تجارب رقمية مدروسة: من تطبيقات الويب إلى الألعاب التفاعلية، بشغف للتفاصيل وكود نظيف.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="scrollToId('projects')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/></svg>
+            عرض أعمالي
+          </button>
+          <button class="btn btn-ghost" onclick="scrollToId('contact')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            تواصل معي
+          </button>
+        </div>
+        <div class="hero-stats" id="hero-stats"></div>
+      </div>
+      <div class="hero-visual" data-reveal>
+        <div class="hero-orb"></div>
+        <div class="profile-frame" id="profile-frame"><div class="ph">ح</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="section-tag">أعمالي</span>
+        <h2 class="section-title" id="projects-title">مشاريعي وأعمالي</h2>
+        <p class="section-sub" id="projects-sub">مجموعة مختارة من الأكواد، الألعاب، والتصاميم التي عملت عليها.</p>
+      </div>
+      <div class="toolbar" data-reveal>
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="project-search" placeholder="ابحث في المشاريع...">
+        </div>
+        <div class="filter-chips" id="type-filters"></div>
+      </div>
+      <div class="filter-chips" id="section-filters" style="margin-bottom:1.6rem;"></div>
+      <div class="projects-grid" id="projects-grid"></div>
+    </div>
+  </section>
+
+  <section class="section" id="skills">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="section-tag">القدرات</span>
+        <h2 class="section-title" id="skills-title">مهاراتي</h2>
+        <p class="section-sub" id="skills-sub">الأدوات والتقنيات التي أستخدمها لتحويل الأفكار إلى منتجات.</p>
+      </div>
+      <div class="skills-grid" id="skills-grid" data-reveal></div>
+      <div style="margin-top:1.2rem;" id="skill-add-wrap"></div>
+    </div>
+  </section>
+
+  <div id="custom-sections-mount"></div>
+
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="section-tag">تواصل</span>
+        <h2 class="section-title" id="contact-title">لنتحدث عن مشروعك القادم</h2>
+        <p class="section-sub" id="contact-sub">هل لديك فكرة أو مشروع؟ أرسل رسالة وسأرد عليك قريبًا.</p>
+      </div>
+      <div class="contact-wrap">
+        <div class="card contact-info-card" data-reveal id="contact-info-card"></div>
+        <form class="card contact-form" data-reveal id="contact-form">
+          <div class="field"><label>الاسم</label><input type="text" id="cf-name" required placeholder="اسمك الكامل"></div>
+          <div class="field"><label>البريد الإلكتروني</label><input type="email" id="cf-email" required placeholder="example@mail.com"></div>
+          <div class="field"><label>الرسالة</label><textarea id="cf-message" rows="5" required placeholder="اكتب رسالتك هنا..."></textarea></div>
+          <button type="submit" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/></svg>
+            إرسال الرسالة
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <p id="footer-text">© 2026 حسان. جميع الحقوق محفوظة.</p>
+    <div class="footer-links" id="footer-links"></div>
+  </div>
+</footer>
+
+<button id="back-to-top" aria-label="العودة للأعلى">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+<button id="admin-fab" aria-label="دخول الإدارة" title="دخول الإدارة">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+</button>
+
+<div id="toast-stack"></div>
+<div id="modal-root"></div>
+
+<script>
+/* ==========================================================================
+   PORTFOLIO CMS — Supabase Auth + Database, with local fallback/cache
+   ========================================================================== */
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------------
+   1. CONSTANTS
+--------------------------------------------------------------------- */
+const LS_KEYS = {
+  settings: "pf_settings_v1",
+  sections: "pf_sections_v1",
+  projects: "pf_projects_v1",
+  skills: "pf_skills_v1",
+  customSections: "pf_custom_sections_v1",
+  messages: "pf_messages_v1",
+  session: "pf_admin_session_v1"
+};
+
+// Supabase public configuration. Publishable/anon keys are intended for browser use; never place service_role keys here.
+const SUPABASE_URL = "https://oiqifoohhnrupbmkenrs.supabase.co";
+const SUPABASE_KEY = "sb_publishable__vw6G1knbzmORtiqZnLOZA_23T0ldkB";
+const ADMIN_EMAIL = "hassanmmoo55@gmail.com";
+let authAccessToken = sessionStorage.getItem("pf_supabase_access_token") || "";
+let authUserEmail = "";
+const contentKeys = { settings: LS_KEYS.settings, sections: LS_KEYS.sections, projects: LS_KEYS.projects, skills: LS_KEYS.skills, customSections: LS_KEYS.customSections };
+function apiHeaders(useAuth=false){ const h={"apikey":SUPABASE_KEY,"Content-Type":"application/json"}; if(useAuth && authAccessToken) h.Authorization="Bearer "+authAccessToken; else h.Authorization="Bearer "+SUPABASE_KEY; return h; }
+async function sbFetch(path, options={}){ const headers={...apiHeaders(!!options.auth), ...(options.headers||{})}; const res=await fetch(SUPABASE_URL+path,{...options,headers}); const body=await res.text(); let data=null; try{data=body?JSON.parse(body):null;}catch{} if(!res.ok) throw new Error(data?.msg||data?.message||data?.error_description||data?.error||`Supabase error ${res.status}`); return data; }
+async function sbSaveContent(key,value){ if(!state.isAdmin || !authAccessToken) return; try{ await sbFetch('/rest/v1/portfolio_content?on_conflict=key',{method:'POST',auth:true,headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({key,value,updated_at:new Date().toISOString()})}); }catch(e){ console.error('Supabase save failed',key,e); toast('تعذر حفظ التغييرات في قاعدة البيانات: '+e.message,'error'); } }
+async function loadRemoteContent(){ try{ const rows=await sbFetch('/rest/v1/portfolio_content?select=key,value'); for(const row of (rows||[])){ const k=row.key; if(k===LS_KEYS.settings) state.settings={...DEFAULT_SETTINGS,...row.value}; else if(k===LS_KEYS.sections) state.sections=row.value; else if(k===LS_KEYS.projects) state.projects=row.value; else if(k===LS_KEYS.skills) state.skills=row.value; else if(k===LS_KEYS.customSections) state.customSections=row.value; } }catch(e){ console.warn('Using local cached content until Supabase is available',e); } }
+async function loadRemoteMessages(){ if(!state.isAdmin) return; try{ const rows=await sbFetch('/rest/v1/portfolio_messages?select=id,name,email,message,created_at&order=created_at.desc',{auth:true}); state.messages=(rows||[]).map(m=>({id:m.id,name:m.name,email:m.email,message:m.message,date:m.created_at})); persist(LS_KEYS.messages,state.messages); }catch(e){console.error('Could not load messages',e);} }
+async function seedMissingRemoteContent(){ if(!state.isAdmin || !authAccessToken) return; try{ const rows=await sbFetch('/rest/v1/portfolio_content?select=key'); const existing=new Set((rows||[]).map(r=>r.key)); const values={ [LS_KEYS.settings]:state.settings, [LS_KEYS.sections]:state.sections, [LS_KEYS.projects]:state.projects, [LS_KEYS.skills]:state.skills, [LS_KEYS.customSections]:state.customSections }; for(const [key,value] of Object.entries(values)){ if(!existing.has(key)) await sbSaveContent(key,value); } }catch(e){console.error('Could not initialize remote content',e);} }
+async function verifyAdminSession(){ if(!authAccessToken) return false; try{ const u=await sbFetch('/auth/v1/user',{auth:true}); authUserEmail=(u.email||'').toLowerCase(); if(authUserEmail!==ADMIN_EMAIL.toLowerCase()) throw new Error('هذا الحساب غير مصرح له بالإدارة'); state.isAdmin=true; return true; }catch(e){authAccessToken='';sessionStorage.removeItem('pf_supabase_access_token');state.isAdmin=false;return false;} }
+
+const DEFAULT_SETTINGS = {
+  name: "حسان",
+  role: "مطور برمجيات وصانع ألعاب",
+  bio: "أصنع تجارب رقمية مدروسة: من تطبيقات الويب إلى الألعاب التفاعلية، بشغف للتفاصيل وكود نظيف.",
+  profileImageKey: null,
+  siteBackgroundKey: null,
+  primaryColor: "#7c5cff",
+  secondaryColor: "#22d3ee",
+  bgColor: "#090b12",
+  cardColor: "#131728",
+  textColor: "#e9ecf6",
+  fontSize: 100,
+  cardRadius: 18,
+  glow: 55,
+  projectsTitle: "مشاريعي وأعمالي",
+  projectsSub: "مجموعة مختارة من الأكواد، الألعاب، والتصاميم التي عملت عليها.",
+  skillsTitle: "مهاراتي",
+  skillsSub: "الأدوات والتقنيات التي أستخدمها لتحويل الأفكار إلى منتجات.",
+  contactTitle: "لنتحدث عن مشروعك القادم",
+  contactSub: "هل لديك فكرة أو مشروع؟ أرسل رسالة وسأرد عليك قريبًا.",
+  footerText: "© 2026 حسان. جميع الحقوق محفوظة.",
+  email: "hassan@example.com",
+  phone: "+20 100 000 0000",
+  location: "مصر",
+  github: "https://github.com",
+  linkedin: "https://linkedin.com",
+  stat1Num: "40+", stat1Label: "مشروع منجز",
+  stat2Num: "3+", stat2Label: "سنوات خبرة",
+  stat3Num: "15+", stat3Label: "لعبة وتطبيق",
+  ctaBrowse: "عرض أعمالي",
+  ctaContact: "تواصل معي"
+};
+
+const DEFAULT_SECTIONS = [
+  { id: "web", name: "تطبيقات ويب", description: "مواقع وتطبيقات ويب متكاملة", order: 1 },
+  { id: "games", name: "ألعاب", description: "ألعاب تفاعلية بالمتصفح", order: 2 },
+  { id: "design", name: "تصميم", description: "أعمال تصميم واجهات وهوية بصرية", order: 3 }
+];
+
+const DEFAULT_SKILLS = [
+  { id: uid(), name: "JavaScript", level: 90 },
+  { id: uid(), name: "HTML / CSS", level: 95 },
+  { id: uid(), name: "Unity / C#", level: 80 },
+  { id: uid(), name: "UI/UX Design", level: 75 },
+  { id: uid(), name: "Python", level: 70 }
+];
+
+const TYPE_META = {
+  code:  { label: "كود برمجي", icon: "💻" },
+  pdf:   { label: "ملف PDF", icon: "📄" },
+  game:  { label: "لعبة / مشروع ويب", icon: "🎮" },
+  image: { label: "صورة", icon: "🖼️" },
+  file:  { label: "ملف آخر", icon: "📦" }
+};
+
+/* ---------------------------------------------------------------------
+   2. STORAGE LAYER — abstracted so it can later be swapped for Firebase
+--------------------------------------------------------------------- */
+// --- Small structured data: localStorage ---
+const LocalStore = {
+  get(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) return fallback;
+      return JSON.parse(raw);
+    }catch(e){ console.error("LocalStore.get error", e); return fallback; }
+  },
+  set(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch(e){ console.error("LocalStore.set error", e); toast("تعذر حفظ البيانات محليًا", "error"); return false; }
+  }
+};
+
+// --- Large binary/text files: IndexedDB ---
+const IDB_NAME = "pf_files_db";
+const IDB_STORE = "files";
+let idbPromise = null;
+function openIDB(){
+  if(idbPromise) return idbPromise;
+  idbPromise = new Promise((resolve, reject) => {
+    if(!('indexedDB' in window)){ reject(new Error("IndexedDB غير مدعوم في هذا المتصفح")); return; }
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE, { keyPath: "key" });
+    };
+    req.onsuccess = (e) => resolve(e.target.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+  return idbPromise;
+}
+const FileStore = {
+  async put(key, record){
+    if(state.isAdmin && authAccessToken && record?.blob){
+      try{ const r=await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-assets/${encodeURIComponent(key)}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${authAccessToken}`,'Content-Type':record.mime||'application/octet-stream','x-upsert':'true'},body:record.blob}); if(!r.ok) throw new Error(await r.text()); return true; }
+      catch(e){ console.error('Remote asset upload failed; using local cache',e); toast('تعذر رفع الملف إلى التخزين السحابي، تم حفظه محليًا فقط','error'); }
+    }
+    const db = await openIDB();
+    return new Promise((resolve, reject) => { const tx=db.transaction(IDB_STORE,'readwrite'); tx.objectStore(IDB_STORE).put({key,...record}); tx.oncomplete=()=>resolve(true); tx.onerror=()=>reject(tx.error); });
+  },
+  async get(key){
+    if(!key) return null;
+    try{ const r=await fetch(`${SUPABASE_URL}/storage/v1/object/public/portfolio-assets/${encodeURIComponent(key)}`); if(r.ok){const blob=await r.blob();return {key,blob,name:key,mime:r.headers.get('content-type')||blob.type||'application/octet-stream',size:blob.size};} }catch(e){ console.warn('Remote asset unavailable, trying local cache',e); }
+    const db=await openIDB();
+    return new Promise((resolve,reject)=>{const tx=db.transaction(IDB_STORE,'readonly');const req=tx.objectStore(IDB_STORE).get(key);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});
+  },
+  async delete(key){
+    if(!key) return;
+    if(state.isAdmin && authAccessToken){ try{await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-assets/${encodeURIComponent(key)}`,{method:'DELETE',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${authAccessToken}`}});}catch(e){console.warn('Remote asset delete failed',e);} }
+    try{const db=await openIDB();await new Promise((resolve,reject)=>{const tx=db.transaction(IDB_STORE,'readwrite');tx.objectStore(IDB_STORE).delete(key);tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error);});}catch(e){console.warn('Local asset delete failed',e);}
+  }
+};
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,9); }
+function fmtDate(d){
+  try{ return new Date(d).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }); }
+  catch(e){ return d; }
+}
+function fmtBytes(bytes){
+  if(!bytes && bytes !== 0) return "";
+  const units = ["بايت","كيلوبايت","ميجابايت","جيجابايت"];
+  let i = 0, v = bytes;
+  while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
+  return v.toFixed(v<10&&i>0?1:0) + " " + units[i];
+}
+function escapeHtml(str){
+  if(str === null || str === undefined) return "";
+  return String(str).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+/* ---------------------------------------------------------------------
+   3. APP STATE
+--------------------------------------------------------------------- */
+const state = {
+  settings: LocalStore.get(LS_KEYS.settings, null) || { ...DEFAULT_SETTINGS },
+  sections: LocalStore.get(LS_KEYS.sections, null) || DEFAULT_SECTIONS.slice(),
+  projects: LocalStore.get(LS_KEYS.projects, null) || [],
+  skills: LocalStore.get(LS_KEYS.skills, null) || DEFAULT_SKILLS,
+  customSections: LocalStore.get(LS_KEYS.customSections, null) || [],
+  messages: LocalStore.get(LS_KEYS.messages, null) || [],
+  isAdmin: false,
+  activeTypeFilter: "all",
+  activeSectionFilter: "all",
+  searchQuery: "",
+  adminTab: "dashboard"
+};
+// merge in any newly-added default settings keys for users with old saved data
+state.settings = { ...DEFAULT_SETTINGS, ...state.settings };
+
+function persist(key, value){
+  LocalStore.set(key, value);
+}
+function saveSettings(){ persist(LS_KEYS.settings, state.settings); void sbSaveContent(LS_KEYS.settings,state.settings); }
+function saveSections(){ persist(LS_KEYS.sections, state.sections); void sbSaveContent(LS_KEYS.sections,state.sections); }
+function saveProjects(){ persist(LS_KEYS.projects, state.projects); void sbSaveContent(LS_KEYS.projects,state.projects); }
+function saveSkills(){ persist(LS_KEYS.skills, state.skills); void sbSaveContent(LS_KEYS.skills,state.skills); }
+function saveCustomSections(){ persist(LS_KEYS.customSections, state.customSections); void sbSaveContent(LS_KEYS.customSections,state.customSections); }
+function saveMessages(){ persist(LS_KEYS.messages, state.messages); }
+
+/* ---------------------------------------------------------------------
+   4. TOASTS
+--------------------------------------------------------------------- */
+function toast(message, type = "info"){
+  const stack = document.getElementById("toast-stack");
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.innerHTML = `<span class="dot"></span><span>${escapeHtml(message)}</span>`;
+  stack.appendChild(el);
+  setTimeout(() => {
+    el.classList.add("out");
+    setTimeout(() => el.remove(), 320);
+  }, 3200);
+}
+
+/* ---------------------------------------------------------------------
+   5. MODAL SYSTEM
+--------------------------------------------------------------------- */
+function openModal(html, opts = {}){
+  const root = document.getElementById("modal-root");
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.innerHTML = `<div class="modal-box ${opts.wide ? 'wide' : ''} ${opts.viewer ? 'viewer' : ''}">${html}</div>`;
+  root.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("show"));
+  overlay.addEventListener("click", (e) => { if(e.target === overlay && !opts.persistent) closeModal(overlay); });
+  overlay.querySelectorAll("[data-modal-close]").forEach(btn => btn.addEventListener("click", () => closeModal(overlay)));
+  const escHandler = (e) => { if(e.key === "Escape" && !opts.persistent){ closeModal(overlay); document.removeEventListener("keydown", escHandler); } };
+  document.addEventListener("keydown", escHandler);
+  return overlay;
+}
+function closeModal(overlay){
+  overlay.classList.remove("show");
+  setTimeout(() => overlay.remove(), 320);
+}
+function confirmDialog(message, itemName, onConfirm){
+  const overlay = openModal(`
+    <div class="modal-head"><h3>تأكيد الحذف</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body confirm-box">
+      <p>${escapeHtml(message)}</p>
+      ${itemName ? `<p class="warn-name">${escapeHtml(itemName)}</p>` : ""}
+      <p style="font-size:.85rem; margin-top:.6rem;">لا يمكن التراجع عن هذا الإجراء.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-modal-close>إلغاء</button>
+      <button class="btn btn-danger" id="confirm-yes">حذف نهائيًا</button>
+    </div>
+  `);
+  overlay.querySelector("#confirm-yes").addEventListener("click", () => {
+    onConfirm();
+    closeModal(overlay);
+  });
+}
+
+/* ---------------------------------------------------------------------
+   6. AUTH
+--------------------------------------------------------------------- */
+function normalizeAdminLogin(value){ const v=String(value||'').trim().toLowerCase(); return v==='hassan' ? ADMIN_EMAIL : v; }
+async function verifyLogin(email, password){
+  email=normalizeAdminLogin(email);
+  const data=await sbFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password})});
+  if((data.user?.email||'').toLowerCase()!==ADMIN_EMAIL.toLowerCase()) throw new Error('هذا البريد غير مصرح له بلوحة الإدارة');
+  authAccessToken=data.access_token; authUserEmail=(data.user.email||'').toLowerCase(); sessionStorage.setItem('pf_supabase_access_token',authAccessToken); state.isAdmin=true; return true;
+}
+async function createAdminAccount(email,password){
+  email=normalizeAdminLogin(email);
+  if(email.toLowerCase()!==ADMIN_EMAIL.toLowerCase()) throw new Error('إنشاء حساب الإدارة مسموح للبريد المحدد فقط');
+  const data=await sbFetch('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password,data:{full_name:'Hassan'}})});
+  if(data.access_token && data.user){ authAccessToken=data.access_token; authUserEmail=(data.user.email||'').toLowerCase(); sessionStorage.setItem('pf_supabase_access_token',authAccessToken); state.isAdmin=authUserEmail===ADMIN_EMAIL.toLowerCase(); return 'signed-in'; }
+  return 'check-email';
+}
+function openLoginModal(){
+  const overlay = openModal(`
+    <div class="modal-head"><h3>تسجيل دخول الإدارة</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body">
+      <form id="login-form">
+        <div class="field" style="margin-bottom:1rem;"><label>اسم المستخدم</label><input type="text" id="login-user" required autocomplete="username" value="hassan"></div>
+        <div class="field"><label>كلمة المرور</label><input type="password" id="login-pass" required autocomplete="current-password"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.4rem;">دخول</button>
+      </form>
+      <button type="button" id="create-admin-account" class="btn btn-ghost" style="width:100%;margin-top:.7rem;">إنشاء حساب الإدارة لأول مرة</button>
+      <p class="login-hint">اسم المستخدم: hassan. أدخل كلمة المرور التي اخترتها عند إنشاء حساب الإدارة أول مرة. تسجيل الدخول محمي عبر Supabase Auth، ولا يتم تخزين كلمة المرور داخل ملف الموقع.</p>
+    </div>
+  `);
+  overlay.querySelector("#login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const u = overlay.querySelector("#login-user").value.trim();
+    const p = overlay.querySelector("#login-pass").value;
+    try{
+      await verifyLogin(u,p); await loadRemoteMessages(); closeModal(overlay); await enterAdminMode(); toast("تم تسجيل الدخول بنجاح", "success");
+    }catch(err){ toast(err.message||"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور.","error"); }
+  });
+  overlay.querySelector("#create-admin-account").addEventListener("click",async()=>{
+    const u=overlay.querySelector("#login-user").value.trim(); const p=overlay.querySelector("#login-pass").value;
+    if(!p || p.length<10){toast("اكتب كلمة مرور لا تقل عن 10 أحرف قبل إنشاء الحساب", "error");return;}
+    try{const result=await createAdminAccount(u,p); if(result==='check-email') toast("تم طلب إنشاء الحساب. افتح بريدك واضغط رابط التأكيد ثم ارجع وسجّل الدخول.","success"); else {await loadRemoteMessages();closeModal(overlay);await enterAdminMode();toast("تم إنشاء حساب الإدارة وتسجيل الدخول", "success");}}catch(err){toast(err.message||"تعذر إنشاء الحساب", "error");}
+  });
+}
+async function enterAdminMode(){
+  document.body.classList.add("admin-on");
+  document.getElementById("admin-bar").classList.add("show");
+  document.getElementById("admin-fab").style.display = "none";
+  document.getElementById("admin-user-label").textContent = "مرحبًا، " + (authUserEmail||ADMIN_EMAIL);
+  await loadRemoteContent(); await seedMissingRemoteContent(); await loadRemoteMessages(); await renderAll();
+}
+function logout(){
+  state.isAdmin = false;
+  sessionStorage.removeItem(LS_KEYS.session); sessionStorage.removeItem("pf_supabase_access_token"); authAccessToken=""; authUserEmail="";
+  document.body.classList.remove("admin-on");
+  document.getElementById("admin-bar").classList.remove("show");
+  document.getElementById("admin-fab").style.display = "flex";
+  renderAll();
+  toast("تم تسجيل الخروج", "info");
+}
+
+/* ---------------------------------------------------------------------
+   7. THEME / DESIGN APPLY
+--------------------------------------------------------------------- */
+async function applyTheme(){
+  const s = state.settings;
+  const root = document.documentElement.style;
+  root.setProperty("--c-primary", s.primaryColor);
+  root.setProperty("--c-primary-2", s.secondaryColor);
+  root.setProperty("--c-bg", s.bgColor);
+  root.setProperty("--c-card-solid", s.cardColor);
+  root.setProperty("--c-card", s.cardColor + "cc");
+  root.setProperty("--c-text", s.textColor);
+  root.setProperty("--font-scale", (s.fontSize/100).toString());
+  root.setProperty("--radius", s.cardRadius + "px");
+  root.setProperty("--glow", (s.glow/100).toString());
+
+  if(s.siteBackgroundKey){
+    try{
+      const rec = await FileStore.get(s.siteBackgroundKey);
+      if(rec && rec.blob){
+        const url = URL.createObjectURL(rec.blob);
+        document.body.style.setProperty('--custom-bg-image', `url(${url})`);
+        document.body.style.backgroundImage = `linear-gradient(rgba(9,11,18,.82), rgba(9,11,18,.9)), url(${url})`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundAttachment = "fixed";
+        document.body.style.backgroundPosition = "center";
+      }
+    }catch(e){ /* ignore */ }
+  } else {
+    document.body.style.backgroundImage = "";
+  }
+}
+
+/* ---------------------------------------------------------------------
+   8. RENDER: NAVBAR / HERO / FOOTER / TEXTS
+--------------------------------------------------------------------- */
+function renderTexts(){
+  const s = state.settings;
+  document.title = s.name + " | " + s.role;
+  document.getElementById("brand-name").textContent = s.name;
+  document.getElementById("brand-mark").textContent = s.name.trim().charAt(0) || "؟";
+  document.getElementById("hero-name").textContent = s.name;
+  document.getElementById("hero-role").textContent = s.role;
+  document.getElementById("hero-bio").textContent = s.bio;
+  document.getElementById("projects-title").textContent = s.projectsTitle;
+  document.getElementById("projects-sub").textContent = s.projectsSub;
+  document.getElementById("skills-title").textContent = s.skillsTitle;
+  document.getElementById("skills-sub").textContent = s.skillsSub;
+  document.getElementById("contact-title").textContent = s.contactTitle;
+  document.getElementById("contact-sub").textContent = s.contactSub;
+  document.getElementById("footer-text").textContent = s.footerText;
+
+  document.getElementById("hero-stats").innerHTML = `
+    <div class="hero-stat"><b>${escapeHtml(s.stat1Num)}</b><span>${escapeHtml(s.stat1Label)}</span></div>
+    <div class="hero-stat"><b>${escapeHtml(s.stat2Num)}</b><span>${escapeHtml(s.stat2Label)}</span></div>
+    <div class="hero-stat"><b>${escapeHtml(s.stat3Num)}</b><span>${escapeHtml(s.stat3Label)}</span></div>
+  `;
+
+  document.getElementById("contact-info-card").innerHTML = `
+    <div class="contact-info-item"><div class="ic">📧</div><div><b>${escapeHtml(s.email)}</b><span>البريد الإلكتروني</span></div></div>
+    <div class="contact-info-item"><div class="ic">📱</div><div><b>${escapeHtml(s.phone)}</b><span>رقم الهاتف</span></div></div>
+    <div class="contact-info-item"><div class="ic">📍</div><div><b>${escapeHtml(s.location)}</b><span>الموقع</span></div></div>
+    <div class="contact-info-item"><div class="ic">🔗</div><div><b>تابعني</b><span><a href="${escapeHtml(s.github)}" target="_blank" rel="noopener" style="color:var(--c-primary-2)">GitHub</a> · <a href="${escapeHtml(s.linkedin)}" target="_blank" rel="noopener" style="color:var(--c-primary-2)">LinkedIn</a></span></div></div>
+  `;
+  document.getElementById("footer-links").innerHTML = `
+    <a href="${escapeHtml(s.github)}" target="_blank" rel="noopener">GitHub</a>
+    <a href="${escapeHtml(s.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="mailto:${escapeHtml(s.email)}">راسلني</a>
+  `;
+}
+async function renderProfileImage(){
+  const frame = document.getElementById("profile-frame");
+  const key = state.settings.profileImageKey;
+  if(key){
+    const rec = await FileStore.get(key);
+    if(rec && rec.blob){
+      const url = URL.createObjectURL(rec.blob);
+      frame.innerHTML = `<img src="${url}" alt="${escapeHtml(state.settings.name)}">`;
+      return;
+    }
+  }
+  frame.innerHTML = `<div class="ph">${escapeHtml(state.settings.name.trim().charAt(0) || "؟")}</div>`;
+}
+
+/* ---------------------------------------------------------------------
+   9. RENDER: PROJECTS
+--------------------------------------------------------------------- */
+function sectionsSorted(){ return state.sections.slice().sort((a,b) => a.order - b.order); }
+
+function renderFilters(){
+  const typeWrap = document.getElementById("type-filters");
+  const types = ["all", ...Object.keys(TYPE_META)];
+  typeWrap.innerHTML = types.map(t => `
+    <button class="chip ${state.activeTypeFilter===t?'active':''}" data-type-filter="${t}">
+      ${t==="all" ? "الكل" : TYPE_META[t].icon + " " + TYPE_META[t].label}
+    </button>
+  `).join("");
+  typeWrap.querySelectorAll("[data-type-filter]").forEach(btn => {
+    btn.addEventListener("click", () => { state.activeTypeFilter = btn.dataset.typeFilter; renderProjects(); renderFilters(); });
+  });
+
+  const secWrap = document.getElementById("section-filters");
+  const secs = sectionsSorted();
+  secWrap.innerHTML = `<button class="chip ${state.activeSectionFilter==='all'?'active':''}" data-sec-filter="all">كل الأقسام</button>` +
+    secs.map(s => `<button class="chip ${state.activeSectionFilter===s.id?'active':''}" data-sec-filter="${s.id}">${escapeHtml(s.name)}</button>`).join("");
+  secWrap.querySelectorAll("[data-sec-filter]").forEach(btn => {
+    btn.addEventListener("click", () => { state.activeSectionFilter = btn.dataset.secFilter; renderProjects(); renderFilters(); });
+  });
+}
+
+function filteredProjects(){
+  return state.projects.filter(p => {
+    if(state.activeTypeFilter !== "all" && p.type !== state.activeTypeFilter) return false;
+    if(state.activeSectionFilter !== "all" && p.category !== state.activeSectionFilter) return false;
+    if(state.searchQuery){
+      const q = state.searchQuery.toLowerCase();
+      if(!p.title.toLowerCase().includes(q) && !(p.description||"").toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+}
+
+async function renderProjects(){
+  const grid = document.getElementById("projects-grid");
+  const list = filteredProjects();
+  if(list.length === 0){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="ico">🗂️</div>
+      <h4>لا توجد مشاريع حتى الآن</h4>
+      <p>${state.isAdmin ? "استخدم زر (إضافة مشروع) من لوحة التحكم لإضافة أول مشروع." : "ترقّب إضافة أعمال جديدة قريبًا."}</p>
+    </div>`;
+    return;
+  }
+  const secMap = Object.fromEntries(state.sections.map(s => [s.id, s.name]));
+  grid.innerHTML = list.map(p => {
+    const meta = TYPE_META[p.type] || TYPE_META.file;
+    return `
+    <div class="card project-card" data-reveal data-project-id="${p.id}">
+      <div class="project-thumb" data-thumb="${p.id}"><span class="type-icon">${meta.icon}</span></div>
+      <div class="project-type-badge">${meta.icon} ${meta.label}</div>
+      ${state.isAdmin ? `
+      <div class="admin-card-actions">
+        <button data-edit-project="${p.id}" title="تعديل">✎</button>
+        <button class="del" data-del-project="${p.id}" title="حذف">🗑</button>
+      </div>` : ""}
+      <div class="project-body">
+        <div class="project-meta-row">
+          <span class="project-cat-tag">${escapeHtml(secMap[p.category] || "بدون قسم")}</span>
+          <span>· ${fmtDate(p.dateAdded)}</span>
+        </div>
+        <div class="project-title">${escapeHtml(p.title)}</div>
+        <p class="project-desc">${escapeHtml(p.description || "")}</p>
+        <div class="project-foot">
+          <button class="btn btn-primary btn-sm" data-view-project="${p.id}">عرض المشروع</button>
+          ${p.downloadable ? `<button class="btn btn-ghost btn-sm" data-download-project="${p.id}">تحميل</button>` : ""}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  grid.querySelectorAll("[data-view-project]").forEach(b => b.addEventListener("click", () => openProjectViewer(b.dataset.viewProject)));
+  grid.querySelectorAll("[data-download-project]").forEach(b => b.addEventListener("click", () => downloadProject(b.dataset.downloadProject)));
+  grid.querySelectorAll("[data-edit-project]").forEach(b => b.addEventListener("click", () => openProjectFormModal(b.dataset.editProject)));
+  grid.querySelectorAll("[data-del-project]").forEach(b => b.addEventListener("click", () => {
+    const proj = state.projects.find(x => x.id === b.dataset.delProject);
+    confirmDialog("هل أنت متأكد من حذف المشروع:", proj?.title, () => deleteProject(b.dataset.delProject));
+  }));
+
+  observeReveals();
+  list.forEach(async p => {
+    const thumbEl = document.querySelector(`[data-thumb="${p.id}"]`);
+    if(!thumbEl) return;
+    if(p.type === "image" && p.fileKey){
+      const rec = await FileStore.get(p.fileKey);
+      if(rec && rec.blob){ thumbEl.innerHTML = `<img src="${URL.createObjectURL(rec.blob)}" alt="${escapeHtml(p.title)}">`; }
+    } else if(p.thumbKey){
+      const rec = await FileStore.get(p.thumbKey);
+      if(rec && rec.blob){ thumbEl.innerHTML = `<img src="${URL.createObjectURL(rec.blob)}" alt="${escapeHtml(p.title)}">`; }
+    }
+  });
+}
+
+async function deleteProject(id){
+  const proj = state.projects.find(p => p.id === id);
+  if(proj){
+    if(proj.fileKey) await FileStore.delete(proj.fileKey);
+    if(proj.thumbKey) await FileStore.delete(proj.thumbKey);
+  }
+  state.projects = state.projects.filter(p => p.id !== id);
+  saveProjects();
+  renderProjects();
+  renderDashboard();
+  toast("تم حذف المشروع", "success");
+}
+
+async function downloadProject(id){
+  const p = state.projects.find(x => x.id === id);
+  if(!p) return;
+  if(p.type === "code" && p.codeContent !== undefined){
+    triggerBlobDownload(new Blob([p.codeContent], {type:"text/plain"}), p.fileName || (p.title + ".txt"));
+    return;
+  }
+  if(p.type === "game" && !p.fileKey && p.codeContent !== undefined){
+    triggerBlobDownload(new Blob([p.codeContent], {type:"text/html"}), p.fileName || (p.title + ".html"));
+    return;
+  }
+  if(!p.fileKey){ toast("لا يوجد ملف للتحميل", "error"); return; }
+  const rec = await FileStore.get(p.fileKey);
+  if(rec && rec.blob){ triggerBlobDownload(rec.blob, rec.name || p.fileName || p.title); }
+}
+function triggerBlobDownload(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename || "download";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ---------------------------------------------------------------------
+   10. PROJECT VIEWER MODAL
+--------------------------------------------------------------------- */
+async function openProjectViewer(id){
+  const p = state.projects.find(x => x.id === id);
+  if(!p) return;
+  const meta = TYPE_META[p.type] || TYPE_META.file;
+  let bodyHtml = `<div class="viewer-frame-wrap"><div class="file-generic-view"><div class="ico">⏳</div><p>جارِ التحميل...</p></div></div>`;
+  const overlay = openModal(`
+    <div class="modal-head"><h3>${meta.icon} ${escapeHtml(p.title)}</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body">
+      <p class="project-desc" style="margin-bottom:1rem;">${escapeHtml(p.description||"")}</p>
+      <div class="viewer-toolbar" id="viewer-toolbar"></div>
+      <div id="viewer-content">${bodyHtml}</div>
+    </div>
+    <div class="modal-foot">
+      ${p.downloadable ? `<button class="btn btn-ghost" id="viewer-download">⬇ تحميل</button>` : ""}
+      <button class="btn btn-primary" data-modal-close>إغلاق</button>
+    </div>
+  `, { viewer: true });
+
+  if(p.downloadable){ overlay.querySelector("#viewer-download").addEventListener("click", () => downloadProject(p.id)); }
+
+  const content = overlay.querySelector("#viewer-content");
+  const toolbar = overlay.querySelector("#viewer-toolbar");
+
+  try{
+    if(p.type === "code"){
+      const code = p.codeContent !== undefined ? p.codeContent : "// لا يوجد محتوى";
+      const isHtml = /<\s*html[\s>]|<!doctype\s+html/i.test(code) || /<\s*(body|head)[\s>]/i.test(code);
+      let mode = isHtml ? "preview" : "code";
+
+      function renderCodeContent(){
+        if(mode === "preview"){
+          content.innerHTML = `<div class="viewer-frame-wrap" id="code-preview-wrap"><iframe id="code-preview-frame" sandbox="allow-scripts allow-forms allow-pointer-lock" style="width:100%;height:70vh;border:none;background:#fff;"></iframe></div>`;
+          content.querySelector("#code-preview-frame").srcdoc = code;
+        } else {
+          content.innerHTML = `<div class="code-viewer">${escapeHtml(code)}</div>`;
+        }
+      }
+      function renderCodeToolbar(){
+        toolbar.innerHTML = `
+          ${isHtml ? `<button class="btn ${mode==='preview'?'btn-primary':'btn-ghost'} btn-sm" id="toggle-code-view">${mode==='preview' ? '📄 عرض الكود المصدري' : '🖥️ معاينة الموقع'}</button>` : ""}
+          ${mode==='preview' ? `<button class="btn btn-ghost btn-sm" id="preview-fullscreen">⛶ ملء الشاشة</button>` : ""}
+          <button class="btn btn-ghost btn-sm" id="copy-code">📋 نسخ الكود</button>
+          <button class="btn btn-ghost btn-sm" id="open-code-tab">↗ فتح في تبويب جديد</button>
+        `;
+        if(isHtml){
+          toolbar.querySelector("#toggle-code-view").addEventListener("click", () => {
+            mode = mode === "preview" ? "code" : "preview";
+            renderCodeContent(); renderCodeToolbar();
+          });
+        }
+        if(mode === "preview"){
+          toolbar.querySelector("#preview-fullscreen").addEventListener("click", () => requestFs(document.getElementById("code-preview-wrap")));
+        }
+        toolbar.querySelector("#copy-code").addEventListener("click", async () => {
+          try{ await navigator.clipboard.writeText(code); toast("تم نسخ الكود", "success"); }
+          catch(e){ toast("تعذر نسخ الكود", "error"); }
+        });
+        toolbar.querySelector("#open-code-tab").addEventListener("click", () => {
+          const blob = new Blob([code], {type: isHtml ? "text/html" : "text/plain"});
+          window.open(URL.createObjectURL(blob), "_blank");
+        });
+      }
+      renderCodeContent();
+      renderCodeToolbar();
+    }
+    else if(p.type === "pdf"){
+      const rec = await FileStore.get(p.fileKey);
+      if(!rec || !rec.blob){ content.innerHTML = fileMissingHtml(); return; }
+      const url = URL.createObjectURL(rec.blob);
+      content.innerHTML = `<div class="viewer-frame-wrap" id="pdf-wrap"><embed src="${url}" type="application/pdf" style="width:100%;height:70vh;border:none;"></div>`;
+      toolbar.innerHTML = `<button class="btn btn-ghost btn-sm" id="pdf-fullscreen">⛶ ملء الشاشة</button>
+        <span style="align-self:center; font-size:.8rem; color:var(--c-text-dim);">استخدم أدوات المستعرض المدمجة للتكبير/التصغير والتنقل بين الصفحات</span>`;
+      toolbar.querySelector("#pdf-fullscreen").addEventListener("click", () => requestFs(document.getElementById("pdf-wrap")));
+    }
+    else if(p.type === "game"){
+      if(p.fileKey){
+        const rec = await FileStore.get(p.fileKey);
+        if(!rec || !rec.blob){ content.innerHTML = fileMissingHtml(); return; }
+        const url = URL.createObjectURL(rec.blob);
+        content.innerHTML = `<div class="viewer-frame-wrap" id="game-wrap"><iframe src="${url}" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock" style="width:100%;height:70vh;border:none;background:#fff;"></iframe></div>`;
+      } else if(p.codeContent){
+        content.innerHTML = `<div class="viewer-frame-wrap" id="game-wrap"><iframe id="game-srcdoc-frame" sandbox="allow-scripts allow-forms allow-pointer-lock" style="width:100%;height:70vh;border:none;background:#fff;"></iframe></div>`;
+        // set via property (not attribute string) to avoid any HTML-escaping issues with the code content
+        content.querySelector("#game-srcdoc-frame").srcdoc = p.codeContent;
+      } else {
+        content.innerHTML = fileMissingHtml();
+        return;
+      }
+      toolbar.innerHTML = `<button class="btn btn-ghost btn-sm" id="game-fullscreen">⛶ ملء الشاشة</button>
+        <button class="btn btn-ghost btn-sm" id="game-open-tab">↗ فتح في تبويب جديد</button>`;
+      toolbar.querySelector("#game-fullscreen").addEventListener("click", () => requestFs(document.getElementById("game-wrap")));
+      toolbar.querySelector("#game-open-tab").addEventListener("click", async () => {
+        let url;
+        if(p.fileKey){ const rec = await FileStore.get(p.fileKey); if(rec && rec.blob) url = URL.createObjectURL(rec.blob); }
+        else if(p.codeContent){ url = URL.createObjectURL(new Blob([p.codeContent], {type:"text/html"})); }
+        if(url) window.open(url, "_blank"); else toast("تعذر فتح المشروع", "error");
+      });
+    }
+    else if(p.type === "image"){
+      const rec = await FileStore.get(p.fileKey);
+      if(!rec || !rec.blob){ content.innerHTML = fileMissingHtml(); return; }
+      const url = URL.createObjectURL(rec.blob);
+      let zoom = 1;
+      content.innerHTML = `<div class="image-viewer-wrap" id="img-wrap"><img src="${url}" id="viewer-img" style="transform:scale(1)"></div>`;
+      toolbar.innerHTML = `
+        <button class="btn btn-ghost btn-sm" id="img-zoom-out">➖</button>
+        <button class="btn btn-ghost btn-sm" id="img-zoom-in">➕</button>
+        <button class="btn btn-ghost btn-sm" id="img-fullscreen">⛶ ملء الشاشة</button>`;
+      const imgEl = () => overlay.querySelector("#viewer-img");
+      toolbar.querySelector("#img-zoom-in").addEventListener("click", () => { zoom = Math.min(zoom + .25, 3); imgEl().style.transform = `scale(${zoom})`; });
+      toolbar.querySelector("#img-zoom-out").addEventListener("click", () => { zoom = Math.max(zoom - .25, .5); imgEl().style.transform = `scale(${zoom})`; });
+      toolbar.querySelector("#img-fullscreen").addEventListener("click", () => requestFs(document.getElementById("img-wrap")));
+    }
+    else {
+      const rec = p.fileKey ? await FileStore.get(p.fileKey) : null;
+      content.innerHTML = `<div class="file-generic-view">
+        <div class="ico">📦</div>
+        <h4>${escapeHtml(p.fileName || p.title)}</h4>
+        <p>${rec ? escapeHtml(rec.mime || "نوع غير معروف") + " · " + fmtBytes(rec.size) : "لا تتوفر تفاصيل إضافية عن الملف"}</p>
+      </div>`;
+    }
+  }catch(err){
+    console.error(err);
+    content.innerHTML = fileMissingHtml();
+  }
+}
+function fileMissingHtml(){
+  return `<div class="file-generic-view"><div class="ico">⚠️</div><p>تعذر تحميل الملف. قد يكون غير موجود أو تالفًا.</p></div>`;
+}
+function requestFs(el){
+  if(!el) return;
+  if(el.requestFullscreen) el.requestFullscreen();
+  else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+/* ---------------------------------------------------------------------
+   11. RENDER: SKILLS
+--------------------------------------------------------------------- */
+function renderSkills(){
+  const grid = document.getElementById("skills-grid");
+  if(state.skills.length === 0){
+    grid.innerHTML = `<div class="empty-state"><div class="ico">🧩</div><h4>لا توجد مهارات مضافة</h4></div>`;
+  } else {
+    grid.innerHTML = state.skills.map(sk => `
+      <div class="card skill-card" data-reveal>
+        <div class="skill-top"><span class="skill-name">${escapeHtml(sk.name)}</span><span class="skill-pct">${sk.level}%</span></div>
+        <div class="skill-bar"><span data-skill-bar="${sk.id}" style="width:0"></span></div>
+        ${state.isAdmin ? `<div class="admin-inline-actions">
+          <button data-edit-skill="${sk.id}">✎</button>
+          <button data-del-skill="${sk.id}">🗑</button>
+        </div>` : ""}
+      </div>
+    `).join("");
+    requestAnimationFrame(() => {
+      state.skills.forEach(sk => {
+        const bar = grid.querySelector(`[data-skill-bar="${sk.id}"]`);
+        if(bar) setTimeout(() => bar.style.width = sk.level + "%", 150);
+      });
+    });
+    grid.querySelectorAll("[data-edit-skill]").forEach(b => b.addEventListener("click", () => openSkillFormModal(b.dataset.editSkill)));
+    grid.querySelectorAll("[data-del-skill]").forEach(b => b.addEventListener("click", () => {
+      const sk = state.skills.find(x => x.id === b.dataset.delSkill);
+      confirmDialog("هل تريد حذف المهارة:", sk?.name, () => {
+        state.skills = state.skills.filter(x => x.id !== b.dataset.delSkill);
+        saveSkills(); renderSkills(); toast("تم حذف المهارة", "success");
+      });
+    }));
+  }
+  const addWrap = document.getElementById("skill-add-wrap");
+  addWrap.innerHTML = state.isAdmin ? `<button class="btn btn-ghost btn-sm" id="add-skill-btn">+ إضافة مهارة</button>` : "";
+  if(state.isAdmin) addWrap.querySelector("#add-skill-btn").addEventListener("click", () => openSkillFormModal(null));
+  observeReveals();
+}
+function openSkillFormModal(id){
+  const sk = id ? state.skills.find(x => x.id === id) : { name:"", level:70 };
+  const overlay = openModal(`
+    <div class="modal-head"><h3>${id ? "تعديل مهارة" : "إضافة مهارة"}</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:1rem;"><label>اسم المهارة</label><input type="text" id="sk-name" value="${escapeHtml(sk.name)}" required></div>
+      <div class="field"><label>مستوى الإتقان</label>
+        <div class="range-row"><input type="range" id="sk-level" min="0" max="100" value="${sk.level}"><span id="sk-level-out">${sk.level}%</span></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" data-modal-close>إلغاء</button><button class="btn btn-primary" id="sk-save">حفظ</button></div>
+  `);
+  overlay.querySelector("#sk-level").addEventListener("input", (e) => overlay.querySelector("#sk-level-out").textContent = e.target.value + "%");
+  overlay.querySelector("#sk-save").addEventListener("click", () => {
+    const name = overlay.querySelector("#sk-name").value.trim();
+    const level = parseInt(overlay.querySelector("#sk-level").value, 10);
+    if(!name){ toast("يرجى إدخال اسم المهارة", "error"); return; }
+    if(id){ sk.name = name; sk.level = level; }
+    else{ state.skills.push({ id: uid(), name, level }); }
+    saveSkills(); renderSkills(); closeModal(overlay);
+    toast("تم حفظ المهارة", "success");
+  });
+}
+
+/* ---------------------------------------------------------------------
+   12. RENDER: CUSTOM SECTIONS
+--------------------------------------------------------------------- */
+function renderCustomSections(){
+  const mount = document.getElementById("custom-sections-mount");
+  if(state.customSections.length === 0 && !state.isAdmin){ mount.innerHTML = ""; return; }
+  mount.innerHTML = `<section class="section" id="extra"><div class="container">
+    ${state.isAdmin ? `<div class="panel-head"><h4></h4><button class="btn btn-ghost btn-sm" id="add-custom-section">+ إضافة قسم جديد</button></div>` : ""}
+    <div id="custom-sections-list"></div>
+  </div></section>`;
+  const list = mount.querySelector("#custom-sections-list");
+  list.innerHTML = state.customSections.map(cs => `
+    <div class="card custom-section-card" data-reveal>
+      ${state.isAdmin ? `<div class="custom-section-admin">
+        <button class="btn btn-ghost btn-sm" data-edit-custom="${cs.id}">تعديل</button>
+        <button class="btn btn-danger btn-sm" data-del-custom="${cs.id}">حذف</button>
+      </div>` : ""}
+      <h3>${escapeHtml(cs.title)}</h3>
+      <p>${escapeHtml(cs.body)}</p>
+    </div>
+  `).join("");
+  if(state.isAdmin){
+    mount.querySelector("#add-custom-section")?.addEventListener("click", () => openCustomSectionModal(null));
+    list.querySelectorAll("[data-edit-custom]").forEach(b => b.addEventListener("click", () => openCustomSectionModal(b.dataset.editCustom)));
+    list.querySelectorAll("[data-del-custom]").forEach(b => b.addEventListener("click", () => {
+      const cs = state.customSections.find(x => x.id === b.dataset.delCustom);
+      confirmDialog("هل تريد حذف القسم:", cs?.title, () => {
+        state.customSections = state.customSections.filter(x => x.id !== b.dataset.delCustom);
+        saveCustomSections(); renderCustomSections(); toast("تم حذف القسم", "success");
+      });
+    }));
+  }
+  observeReveals();
+}
+function openCustomSectionModal(id){
+  const cs = id ? state.customSections.find(x => x.id === id) : { title:"", body:"" };
+  const overlay = openModal(`
+    <div class="modal-head"><h3>${id ? "تعديل قسم" : "إضافة قسم جديد"}</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:1rem;"><label>عنوان القسم</label><input type="text" id="cs-title" value="${escapeHtml(cs.title)}" required></div>
+      <div class="field"><label>محتوى القسم</label><textarea id="cs-body" rows="6">${escapeHtml(cs.body)}</textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" data-modal-close>إلغاء</button><button class="btn btn-primary" id="cs-save">حفظ</button></div>
+  `);
+  overlay.querySelector("#cs-save").addEventListener("click", () => {
+    const title = overlay.querySelector("#cs-title").value.trim();
+    const body = overlay.querySelector("#cs-body").value.trim();
+    if(!title){ toast("يرجى إدخال عنوان القسم", "error"); return; }
+    if(id){ cs.title = title; cs.body = body; }
+    else{ state.customSections.push({ id: uid(), title, body }); }
+    saveCustomSections(); renderCustomSections(); closeModal(overlay);
+    toast("تم حفظ القسم", "success");
+  });
+}
+
+/* ---------------------------------------------------------------------
+   13. PROJECT FORM MODAL (ADD/EDIT)
+--------------------------------------------------------------------- */
+let pendingFile = { blob: null, name: "", mime: "", size: 0, textContent: null };
+
+function resetPendingFile(){ pendingFile = { blob: null, name: "", mime: "", size: 0, textContent: null }; }
+
+function openProjectFormModal(id){
+  resetPendingFile();
+  const p = id ? state.projects.find(x => x.id === id) : null;
+  const secs = sectionsSorted();
+  const overlay = openModal(`
+    <div class="modal-head"><h3>${p ? "تعديل مشروع" : "إضافة مشروع جديد"}</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full"><label>اسم المشروع</label><input type="text" id="pf-title" value="${escapeHtml(p?.title||"")}" required></div>
+        <div class="field full"><label>الوصف</label><textarea id="pf-desc" rows="3">${escapeHtml(p?.description||"")}</textarea></div>
+        <div class="field"><label>نوع المشروع</label>
+          <select id="pf-type">
+            ${Object.entries(TYPE_META).map(([k,v]) => `<option value="${k}" ${p?.type===k?"selected":""}>${v.icon} ${v.label}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field"><label>القسم</label>
+          <select id="pf-category">
+            ${secs.map(s => `<option value="${s.id}" ${p?.category===s.id?"selected":""}>${escapeHtml(s.name)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field full"><label>رابط خارجي (اختياري)</label><input type="url" id="pf-link" value="${escapeHtml(p?.externalLink||"")}" placeholder="https://..."></div>
+        <div class="field full" id="pf-file-field">
+          <label id="pf-file-label">ملف المشروع</label>
+          <div class="upload-drop" id="pf-drop">
+            <div>اسحب الملف هنا أو اضغط للاختيار</div>
+            <div class="filename" id="pf-filename">${p?.fileName ? escapeHtml(p.fileName) : (p?.type==='code' ? '(كود نصي محفوظ)' : '')}</div>
+          </div>
+          <input type="file" id="pf-file-input" class="visually-hidden">
+        </div>
+        <div class="field full" id="pf-code-field" style="display:none;">
+          <label id="pf-code-label">محتوى الكود (يمكن اللصق مباشرة بدل رفع ملف)</label>
+          <textarea id="pf-code-text" rows="10" style="font-family:var(--font-mono); direction:ltr; text-align:left;">${(p?.type==='code' || p?.type==='game') ? escapeHtml(p.codeContent||"") : ""}</textarea>
+          <div id="pf-code-hint" style="font-size:.78rem; color:var(--c-text-dim); margin-top:.4rem;">
+            إذا كان الكود صفحة HTML كاملة (تحتوي على &lt;html&gt; أو &lt;body&gt;)، سيتم عرضها تلقائيًا كموقع حي يعمل عند الضغط على "مشاهدة المشروع"، مع إمكانية التبديل لعرض الكود المصدري. أما الأكواد الأخرى (JS، Python...) فستظهر كنص مباشرة.
+          </div>
+        </div>
+        <div class="field full" style="flex-direction:row; align-items:center; gap:.6rem;">
+          <input type="checkbox" id="pf-downloadable" ${p?.downloadable !== false ? "checked" : ""} style="width:18px;height:18px;">
+          <label style="margin:0;">السماح بتحميل الملف</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" data-modal-close>إلغاء</button><button class="btn btn-primary" id="pf-save">حفظ المشروع</button></div>
+  `, { wide: true });
+
+  const typeSelect = overlay.querySelector("#pf-type");
+  const fileField = overlay.querySelector("#pf-file-field");
+  const codeField = overlay.querySelector("#pf-code-field");
+  const codeLabel = overlay.querySelector("#pf-code-label");
+  const fileLabel = overlay.querySelector("#pf-file-label");
+  function toggleFieldsByType(){
+    if(typeSelect.value === "code"){
+      fileField.style.display = "none";
+      codeField.style.display = "block";
+      codeLabel.textContent = "محتوى الكود (يمكن اللصق مباشرة بدل رفع ملف)";
+    } else if(typeSelect.value === "game"){
+      fileField.style.display = "block";
+      codeField.style.display = "block";
+      fileLabel.textContent = "ملف HTML للمشروع (اختياري إذا لصقت الكود بالأسفل)";
+      codeLabel.textContent = "أو الصق كود الموقع/اللعبة (HTML) مباشرة";
+    } else {
+      fileField.style.display = "block";
+      codeField.style.display = "none";
+      fileLabel.textContent = "ملف المشروع";
+    }
+  }
+  toggleFieldsByType();
+  typeSelect.addEventListener("change", toggleFieldsByType);
+
+  const drop = overlay.querySelector("#pf-drop");
+  const fileInput = overlay.querySelector("#pf-file-input");
+  drop.addEventListener("click", () => fileInput.click());
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("drag"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
+  drop.addEventListener("drop", (e) => {
+    e.preventDefault(); drop.classList.remove("drag");
+    if(e.dataTransfer.files[0]) handleFilePicked(e.dataTransfer.files[0], overlay);
+  });
+  fileInput.addEventListener("change", (e) => { if(e.target.files[0]) handleFilePicked(e.target.files[0], overlay); });
+
+  overlay.querySelector("#pf-save").addEventListener("click", async () => {
+    const title = overlay.querySelector("#pf-title").value.trim();
+    const description = overlay.querySelector("#pf-desc").value.trim();
+    const type = typeSelect.value;
+    const category = overlay.querySelector("#pf-category").value;
+    const externalLink = overlay.querySelector("#pf-link").value.trim();
+    const downloadable = overlay.querySelector("#pf-downloadable").checked;
+
+    if(!title){ toast("يرجى إدخال اسم المشروع", "error"); return; }
+    if(!secs.length){ toast("يرجى إضافة قسم واحد على الأقل أولًا", "error"); return; }
+
+    const saveBtn = overlay.querySelector("#pf-save");
+    saveBtn.disabled = true; saveBtn.textContent = "جارِ الحفظ...";
+
+    try{
+      let record = p ? { ...p } : {
+        id: uid(), dateAdded: new Date().toISOString(), fileKey: null
+      };
+      record.title = title;
+      record.description = description;
+      record.type = type;
+      record.category = category;
+      record.externalLink = externalLink;
+      record.downloadable = downloadable;
+
+      const pastedCode = overlay.querySelector("#pf-code-text").value;
+
+      if(type === "code"){
+        record.codeContent = pastedCode;
+        record.fileName = title + ".txt";
+        if(record.fileKey){ await FileStore.delete(record.fileKey); record.fileKey = null; }
+      } else if(type === "game" && pendingFile.blob){
+        // uploaded HTML/web project file takes priority over pasted code
+        if(record.fileKey) await FileStore.delete(record.fileKey);
+        const key = uid();
+        await FileStore.put(key, { blob: pendingFile.blob, name: pendingFile.name, mime: pendingFile.mime, size: pendingFile.size });
+        record.fileKey = key;
+        record.fileName = pendingFile.name;
+        delete record.codeContent;
+      } else if(type === "game" && pastedCode.trim()){
+        // inline pasted HTML code — no uploaded file
+        if(record.fileKey){ await FileStore.delete(record.fileKey); record.fileKey = null; }
+        record.codeContent = pastedCode;
+        record.fileName = title + ".html";
+      } else if(type === "game" && record.fileKey){
+        // keep existing uploaded file (editing, nothing changed)
+      } else if(pendingFile.blob){
+        if(record.fileKey) await FileStore.delete(record.fileKey);
+        const key = uid();
+        await FileStore.put(key, { blob: pendingFile.blob, name: pendingFile.name, mime: pendingFile.mime, size: pendingFile.size });
+        record.fileKey = key;
+        record.fileName = pendingFile.name;
+      } else if(!record.fileKey && type !== "code"){
+        const msg = type === "game" ? "يرجى رفع ملف HTML أو لصق كود المشروع" : "يرجى رفع ملف للمشروع";
+        toast(msg, "error");
+        saveBtn.disabled = false; saveBtn.textContent = "حفظ المشروع";
+        return;
+      }
+
+      if(p){
+        const idx = state.projects.findIndex(x => x.id === p.id);
+        state.projects[idx] = record;
+      } else {
+        state.projects.push(record);
+      }
+      saveProjects();
+      renderProjects();
+      renderDashboard();
+      closeModal(overlay);
+      toast(p ? "تم تحديث المشروع" : "تم إضافة المشروع", "success");
+    }catch(err){
+      console.error(err);
+      toast("حدث خطأ أثناء الحفظ", "error");
+      saveBtn.disabled = false; saveBtn.textContent = "حفظ المشروع";
+    }
+  });
+}
+function handleFilePicked(file, overlay){
+  pendingFile = { blob: file, name: file.name, mime: file.type, size: file.size, textContent: null };
+  overlay.querySelector("#pf-filename").textContent = file.name + " (" + fmtBytes(file.size) + ")";
+}
+
+/* ---------------------------------------------------------------------
+   14. ADMIN: SECTIONS MANAGEMENT
+--------------------------------------------------------------------- */
+function renderSectionsPanel(){
+  const wrap = document.getElementById("panel-sections");
+  if(!wrap) return;
+  const secs = sectionsSorted();
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>إدارة الأقسام</h4><button class="btn btn-primary btn-sm" id="add-section-btn">+ إضافة قسم</button></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th></th><th>الاسم</th><th>الوصف</th><th>عدد المشاريع</th><th>إجراءات</th></tr></thead>
+        <tbody>
+          ${secs.map(s => `
+            <tr data-sec-row="${s.id}">
+              <td class="reorder-handle">↕</td>
+              <td><b>${escapeHtml(s.name)}</b></td>
+              <td>${escapeHtml(s.description||"")}</td>
+              <td>${state.projects.filter(p=>p.category===s.id).length}</td>
+              <td class="row-actions">
+                <button data-move-up="${s.id}" title="نقل لأعلى">↑</button>
+                <button data-move-down="${s.id}" title="نقل لأسفل">↓</button>
+                <button data-edit-sec="${s.id}" title="تعديل">✎</button>
+                <button class="del" data-del-sec="${s.id}" title="حذف">🗑</button>
+              </td>
+            </tr>`).join("") || `<tr><td colspan="5" style="text-align:center; color:var(--c-text-dim); padding:2rem;">لا توجد أقسام بعد</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  wrap.querySelector("#add-section-btn").addEventListener("click", () => openSectionFormModal(null));
+  wrap.querySelectorAll("[data-edit-sec]").forEach(b => b.addEventListener("click", () => openSectionFormModal(b.dataset.editSec)));
+  wrap.querySelectorAll("[data-del-sec]").forEach(b => b.addEventListener("click", () => {
+    const s = state.sections.find(x => x.id === b.dataset.delSec);
+    const count = state.projects.filter(p => p.category === s.id).length;
+    confirmDialog(`هل تريد حذف القسم "${s?.name}"؟ ${count>0 ? `يوجد ${count} مشروع مرتبط بهذا القسم.` : ""}`, null, () => {
+      state.sections = state.sections.filter(x => x.id !== s.id);
+      saveSections(); renderSectionsPanel(); renderFilters(); renderProjects(); renderDashboard();
+      toast("تم حذف القسم", "success");
+    });
+  }));
+  wrap.querySelectorAll("[data-move-up]").forEach(b => b.addEventListener("click", () => moveSection(b.dataset.moveUp, -1)));
+  wrap.querySelectorAll("[data-move-down]").forEach(b => b.addEventListener("click", () => moveSection(b.dataset.moveDown, 1)));
+}
+function moveSection(id, dir){
+  const secs = sectionsSorted();
+  const idx = secs.findIndex(s => s.id === id);
+  const swapIdx = idx + dir;
+  if(swapIdx < 0 || swapIdx >= secs.length) return;
+  const tmp = secs[idx].order;
+  secs[idx].order = secs[swapIdx].order;
+  secs[swapIdx].order = tmp;
+  saveSections(); renderSectionsPanel(); renderFilters();
+}
+function openSectionFormModal(id){
+  const s = id ? state.sections.find(x => x.id === id) : { name:"", description:"" };
+  const overlay = openModal(`
+    <div class="modal-head"><h3>${id ? "تعديل قسم" : "إضافة قسم"}</h3><button class="modal-close" data-modal-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:1rem;"><label>اسم القسم</label><input type="text" id="sec-name" value="${escapeHtml(s.name)}" required></div>
+      <div class="field"><label>وصف القسم</label><textarea id="sec-desc" rows="3">${escapeHtml(s.description||"")}</textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" data-modal-close>إلغاء</button><button class="btn btn-primary" id="sec-save">حفظ</button></div>
+  `);
+  overlay.querySelector("#sec-save").addEventListener("click", () => {
+    const name = overlay.querySelector("#sec-name").value.trim();
+    const description = overlay.querySelector("#sec-desc").value.trim();
+    if(!name){ toast("يرجى إدخال اسم القسم", "error"); return; }
+    if(id){ s.name = name; s.description = description; }
+    else{
+      const maxOrder = state.sections.reduce((m,x) => Math.max(m,x.order), 0);
+      state.sections.push({ id: uid(), name, description, order: maxOrder + 1 });
+    }
+    saveSections(); renderSectionsPanel(); renderFilters(); renderProjects(); closeModal(overlay);
+    toast("تم حفظ القسم", "success");
+  });
+}
+
+/* ---------------------------------------------------------------------
+   15. ADMIN: PROJECTS PANEL
+--------------------------------------------------------------------- */
+function renderProjectsPanel(){
+  const wrap = document.getElementById("panel-projects");
+  if(!wrap) return;
+  const secMap = Object.fromEntries(state.sections.map(s => [s.id, s.name]));
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>إدارة المشاريع (${state.projects.length})</h4><button class="btn btn-primary btn-sm" id="add-proj-btn">+ إضافة مشروع</button></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>الاسم</th><th>النوع</th><th>القسم</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
+        <tbody>
+          ${state.projects.map(p => `
+            <tr>
+              <td><b>${escapeHtml(p.title)}</b></td>
+              <td>${TYPE_META[p.type]?.icon||""} ${TYPE_META[p.type]?.label||p.type}</td>
+              <td>${escapeHtml(secMap[p.category]||"—")}</td>
+              <td>${fmtDate(p.dateAdded)}</td>
+              <td class="row-actions">
+                <button data-edit-proj-p="${p.id}" title="تعديل">✎</button>
+                <button class="del" data-del-proj-p="${p.id}" title="حذف">🗑</button>
+              </td>
+            </tr>`).join("") || `<tr><td colspan="5" style="text-align:center; color:var(--c-text-dim); padding:2rem;">لا توجد مشاريع بعد</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  wrap.querySelector("#add-proj-btn").addEventListener("click", () => openProjectFormModal(null));
+  wrap.querySelectorAll("[data-edit-proj-p]").forEach(b => b.addEventListener("click", () => openProjectFormModal(b.dataset.editProjP)));
+  wrap.querySelectorAll("[data-del-proj-p]").forEach(b => b.addEventListener("click", () => {
+    const p = state.projects.find(x => x.id === b.dataset.delProjP);
+    confirmDialog("هل أنت متأكد من حذف المشروع:", p?.title, () => { deleteProject(p.id); renderProjectsPanel(); });
+  }));
+}
+
+/* ---------------------------------------------------------------------
+   16. ADMIN: SKILLS PANEL (reuses site skills grid render)
+--------------------------------------------------------------------- */
+function renderSkillsPanel(){
+  const wrap = document.getElementById("panel-skills");
+  if(!wrap) return;
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>إدارة المهارات</h4><button class="btn btn-primary btn-sm" id="add-skill-btn-panel">+ إضافة مهارة</button></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>المهارة</th><th>المستوى</th><th>إجراءات</th></tr></thead>
+        <tbody>
+          ${state.skills.map(sk => `
+            <tr>
+              <td><b>${escapeHtml(sk.name)}</b></td>
+              <td>${sk.level}%</td>
+              <td class="row-actions">
+                <button data-edit-skill-p="${sk.id}">✎</button>
+                <button class="del" data-del-skill-p="${sk.id}">🗑</button>
+              </td>
+            </tr>`).join("") || `<tr><td colspan="3" style="text-align:center; color:var(--c-text-dim); padding:2rem;">لا توجد مهارات</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  wrap.querySelector("#add-skill-btn-panel").addEventListener("click", () => openSkillFormModal(null));
+  wrap.querySelectorAll("[data-edit-skill-p]").forEach(b => b.addEventListener("click", () => openSkillFormModal(b.dataset.editSkillP)));
+  wrap.querySelectorAll("[data-del-skill-p]").forEach(b => b.addEventListener("click", () => {
+    const sk = state.skills.find(x => x.id === b.dataset.delSkillP);
+    confirmDialog("هل تريد حذف المهارة:", sk?.name, () => {
+      state.skills = state.skills.filter(x => x.id !== sk.id);
+      saveSkills(); renderSkillsPanel(); renderSkills(); toast("تم حذف المهارة", "success");
+    });
+  }));
+}
+
+/* ---------------------------------------------------------------------
+   17. ADMIN: TEXTS PANEL
+--------------------------------------------------------------------- */
+const TEXT_FIELDS = [
+  { key:"name", label:"الاسم" }, { key:"role", label:"المسمى الوظيفي" }, { key:"bio", label:"النبذة", area:true },
+  { key:"projectsTitle", label:"عنوان قسم الأعمال" }, { key:"projectsSub", label:"وصف قسم الأعمال", area:true },
+  { key:"skillsTitle", label:"عنوان قسم المهارات" }, { key:"skillsSub", label:"وصف قسم المهارات", area:true },
+  { key:"contactTitle", label:"عنوان قسم التواصل" }, { key:"contactSub", label:"وصف قسم التواصل", area:true },
+  { key:"ctaBrowse", label:"نص زر عرض الأعمال" }, { key:"ctaContact", label:"نص زر تواصل معي" },
+  { key:"footerText", label:"نص الفوتر" },
+  { key:"email", label:"البريد الإلكتروني" }, { key:"phone", label:"رقم الهاتف" }, { key:"location", label:"الموقع" },
+  { key:"github", label:"رابط GitHub" }, { key:"linkedin", label:"رابط LinkedIn" },
+  { key:"stat1Num", label:"رقم الإحصائية 1" }, { key:"stat1Label", label:"تسمية الإحصائية 1" },
+  { key:"stat2Num", label:"رقم الإحصائية 2" }, { key:"stat2Label", label:"تسمية الإحصائية 2" },
+  { key:"stat3Num", label:"رقم الإحصائية 3" }, { key:"stat3Label", label:"تسمية الإحصائية 3" }
+];
+function renderTextsPanel(){
+  const wrap = document.getElementById("panel-texts");
+  if(!wrap) return;
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>إدارة النصوص</h4></div>
+    <div class="form-grid" id="texts-form">
+      ${TEXT_FIELDS.map(f => `
+        <div class="field ${f.area ? 'full' : ''}">
+          <label>${f.label}</label>
+          ${f.area ? `<textarea rows="2" data-text-field="${f.key}">${escapeHtml(state.settings[f.key]||"")}</textarea>`
+                    : `<input type="text" data-text-field="${f.key}" value="${escapeHtml(state.settings[f.key]||"")}">`}
+        </div>
+      `).join("")}
+    </div>
+    <div class="modal-foot" style="border:none; padding-inline:0; justify-content:flex-start;">
+      <button class="btn btn-primary" id="save-texts-btn">💾 حفظ التغييرات</button>
+    </div>
+  `;
+  wrap.querySelector("#save-texts-btn").addEventListener("click", () => {
+    wrap.querySelectorAll("[data-text-field]").forEach(el => { state.settings[el.dataset.textField] = el.value; });
+    saveSettings();
+    renderTexts();
+    toast("تم حفظ النصوص بنجاح", "success");
+  });
+}
+
+/* ---------------------------------------------------------------------
+   18. ADMIN: DESIGN PANEL
+--------------------------------------------------------------------- */
+function renderDesignPanel(){
+  const wrap = document.getElementById("panel-design");
+  if(!wrap) return;
+  const s = state.settings;
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>إدارة التصميم</h4></div>
+    <div class="form-grid">
+      <div class="field"><label>اللون الأساسي</label><div class="color-field"><input type="color" id="d-primary" value="${s.primaryColor}"><span>${s.primaryColor}</span></div></div>
+      <div class="field"><label>اللون الثانوي</label><div class="color-field"><input type="color" id="d-secondary" value="${s.secondaryColor}"><span>${s.secondaryColor}</span></div></div>
+      <div class="field"><label>لون الخلفية</label><div class="color-field"><input type="color" id="d-bg" value="${s.bgColor}"><span>${s.bgColor}</span></div></div>
+      <div class="field"><label>لون الكروت</label><div class="color-field"><input type="color" id="d-card" value="${s.cardColor}"><span>${s.cardColor}</span></div></div>
+      <div class="field"><label>لون النصوص</label><div class="color-field"><input type="color" id="d-text" value="${s.textColor}"><span>${s.textColor}</span></div></div>
+      <div class="field"><label>حجم الخط (%)</label><div class="range-row"><input type="range" id="d-fontsize" min="80" max="130" value="${s.fontSize}"><span id="d-fontsize-out">${s.fontSize}%</span></div></div>
+      <div class="field"><label>درجة استدارة الكروت (px)</label><div class="range-row"><input type="range" id="d-radius" min="0" max="36" value="${s.cardRadius}"><span id="d-radius-out">${s.cardRadius}px</span></div></div>
+      <div class="field"><label>شدة التوهج (Glow)</label><div class="range-row"><input type="range" id="d-glow" min="0" max="100" value="${s.glow}"><span id="d-glow-out">${s.glow}%</span></div></div>
+      <div class="field full"><label>صورة البروفايل</label>
+        <div class="upload-drop" id="d-profile-drop"><div>اضغط لرفع صورة بروفايل جديدة</div><div class="filename" id="d-profile-filename"></div></div>
+        <input type="file" accept="image/*" id="d-profile-input" class="visually-hidden">
+        <div style="margin-top:.6rem;"><button class="btn btn-ghost btn-sm" id="d-profile-clear">حذف الصورة الحالية</button></div>
+      </div>
+      <div class="field full"><label>خلفية الموقع (اختياري)</label>
+        <div class="upload-drop" id="d-bgimg-drop"><div>اضغط لرفع صورة خلفية للموقع</div><div class="filename" id="d-bgimg-filename"></div></div>
+        <input type="file" accept="image/*" id="d-bgimg-input" class="visually-hidden">
+        <div style="margin-top:.6rem;"><button class="btn btn-ghost btn-sm" id="d-bgimg-clear">إزالة الخلفية</button></div>
+      </div>
+    </div>
+    <div class="modal-foot" style="border:none; padding-inline:0; justify-content:flex-start;">
+      <button class="btn btn-primary" id="save-design-btn">💾 حفظ التغييرات</button>
+      <button class="btn btn-ghost" id="reset-design-btn">استعادة الإعدادات الافتراضية</button>
+    </div>
+  `;
+  const rangePairs = [["d-fontsize","d-fontsize-out","%"],["d-radius","d-radius-out","px"],["d-glow","d-glow-out","%"]];
+  rangePairs.forEach(([inputId,outId,suffix]) => {
+    wrap.querySelector("#"+inputId).addEventListener("input", (e) => wrap.querySelector("#"+outId).textContent = e.target.value + suffix);
+  });
+  wrap.querySelectorAll('input[type=color]').forEach(inp => {
+    inp.addEventListener("input", (e) => { e.target.nextElementSibling.textContent = e.target.value; });
+  });
+
+  let newProfileFile = null, newBgFile = null;
+  const pDrop = wrap.querySelector("#d-profile-drop"), pInput = wrap.querySelector("#d-profile-input");
+  pDrop.addEventListener("click", () => pInput.click());
+  pInput.addEventListener("change", (e) => { if(e.target.files[0]){ newProfileFile = e.target.files[0]; wrap.querySelector("#d-profile-filename").textContent = newProfileFile.name; } });
+  wrap.querySelector("#d-profile-clear").addEventListener("click", async () => {
+    if(s.profileImageKey) await FileStore.delete(s.profileImageKey);
+    s.profileImageKey = null; newProfileFile = null; saveSettings(); renderProfileImage();
+    toast("تم حذف صورة البروفايل", "success");
+  });
+  const bDrop = wrap.querySelector("#d-bgimg-drop"), bInput = wrap.querySelector("#d-bgimg-input");
+  bDrop.addEventListener("click", () => bInput.click());
+  bInput.addEventListener("change", (e) => { if(e.target.files[0]){ newBgFile = e.target.files[0]; wrap.querySelector("#d-bgimg-filename").textContent = newBgFile.name; } });
+  wrap.querySelector("#d-bgimg-clear").addEventListener("click", async () => {
+    if(s.siteBackgroundKey) await FileStore.delete(s.siteBackgroundKey);
+    s.siteBackgroundKey = null; newBgFile = null; saveSettings(); applyTheme();
+    toast("تمت إزالة خلفية الموقع", "success");
+  });
+
+  wrap.querySelector("#save-design-btn").addEventListener("click", async () => {
+    s.primaryColor = wrap.querySelector("#d-primary").value;
+    s.secondaryColor = wrap.querySelector("#d-secondary").value;
+    s.bgColor = wrap.querySelector("#d-bg").value;
+    s.cardColor = wrap.querySelector("#d-card").value;
+    s.textColor = wrap.querySelector("#d-text").value;
+    s.fontSize = parseInt(wrap.querySelector("#d-fontsize").value,10);
+    s.cardRadius = parseInt(wrap.querySelector("#d-radius").value,10);
+    s.glow = parseInt(wrap.querySelector("#d-glow").value,10);
+
+    if(newProfileFile){
+      if(s.profileImageKey) await FileStore.delete(s.profileImageKey);
+      const key = uid();
+      await FileStore.put(key, { blob: newProfileFile, name: newProfileFile.name, mime: newProfileFile.type, size: newProfileFile.size });
+      s.profileImageKey = key;
+    }
+    if(newBgFile){
+      if(s.siteBackgroundKey) await FileStore.delete(s.siteBackgroundKey);
+      const key = uid();
+      await FileStore.put(key, { blob: newBgFile, name: newBgFile.name, mime: newBgFile.type, size: newBgFile.size });
+      s.siteBackgroundKey = key;
+    }
+    saveSettings();
+    await applyTheme();
+    await renderProfileImage();
+    toast("تم حفظ إعدادات التصميم", "success");
+  });
+  wrap.querySelector("#reset-design-btn").addEventListener("click", () => {
+    confirmDialog("سيتم استعادة إعدادات التصميم الافتراضية (الألوان والخطوط فقط، بدون حذف الصور).", null, async () => {
+      Object.assign(s, {
+        primaryColor: DEFAULT_SETTINGS.primaryColor, secondaryColor: DEFAULT_SETTINGS.secondaryColor,
+        bgColor: DEFAULT_SETTINGS.bgColor, cardColor: DEFAULT_SETTINGS.cardColor, textColor: DEFAULT_SETTINGS.textColor,
+        fontSize: DEFAULT_SETTINGS.fontSize, cardRadius: DEFAULT_SETTINGS.cardRadius, glow: DEFAULT_SETTINGS.glow
+      });
+      saveSettings(); await applyTheme(); renderDesignPanel();
+      toast("تمت استعادة الإعدادات الافتراضية", "success");
+    });
+  });
+}
+
+/* ---------------------------------------------------------------------
+   19. ADMIN: MESSAGES PANEL
+--------------------------------------------------------------------- */
+function renderMessagesPanel(){
+  const wrap = document.getElementById("panel-messages");
+  if(!wrap) return;
+  const msgs = state.messages.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>الرسائل الواردة (${msgs.length})</h4></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>الاسم</th><th>البريد</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
+        <tbody>
+          ${msgs.map(m => `
+            <tr>
+              <td><b>${escapeHtml(m.name)}</b></td>
+              <td>${escapeHtml(m.email)}</td>
+              <td>${fmtDate(m.date)}</td>
+              <td class="row-actions">
+                <button data-view-msg="${m.id}" title="عرض">👁</button>
+                <button class="del" data-del-msg="${m.id}" title="حذف">🗑</button>
+              </td>
+            </tr>`).join("") || `<tr><td colspan="4" style="text-align:center; color:var(--c-text-dim); padding:2rem;">لا توجد رسائل بعد</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  wrap.querySelectorAll("[data-view-msg]").forEach(b => b.addEventListener("click", () => {
+    const m = state.messages.find(x => x.id === b.dataset.viewMsg);
+    openModal(`
+      <div class="modal-head"><h3>رسالة من ${escapeHtml(m.name)}</h3><button class="modal-close" data-modal-close>✕</button></div>
+      <div class="modal-body">
+        <p style="color:var(--c-text-dim); margin-bottom:.4rem;">${escapeHtml(m.email)} · ${fmtDate(m.date)}</p>
+        <p style="white-space:pre-line; line-height:1.9;">${escapeHtml(m.message)}</p>
+      </div>
+      <div class="modal-foot"><a class="btn btn-primary" href="mailto:${escapeHtml(m.email)}">الرد بالبريد</a><button class="btn btn-ghost" data-modal-close>إغلاق</button></div>
+    `);
+  }));
+  wrap.querySelectorAll("[data-del-msg]").forEach(b => b.addEventListener("click", () => {
+    const m = state.messages.find(x => x.id === b.dataset.delMsg);
+    confirmDialog("هل تريد حذف الرسالة الواردة من:", m?.name, () => {
+      void sbFetch('/rest/v1/portfolio_messages?id=eq.'+encodeURIComponent(m.id),{method:'DELETE',auth:true,headers:{Prefer:'return=minimal'}}).catch(err=>toast('تعذر حذف الرسالة من قاعدة البيانات: '+err.message,'error'));
+      state.messages = state.messages.filter(x => x.id !== m.id);
+      saveMessages(); renderMessagesPanel(); renderDashboard();
+      toast("تم حذف الرسالة", "success");
+    });
+  }));
+}
+
+/* ---------------------------------------------------------------------
+   20. ADMIN: DASHBOARD STATS
+--------------------------------------------------------------------- */
+function renderDashboard(){
+  const wrap = document.getElementById("panel-dashboard");
+  if(!wrap) return;
+  const counts = {
+    projects: state.projects.length,
+    sections: state.sections.length,
+    images: state.projects.filter(p=>p.type==="image").length,
+    pdf: state.projects.filter(p=>p.type==="pdf").length,
+    games: state.projects.filter(p=>p.type==="game").length,
+    messages: state.messages.length
+  };
+  wrap.innerHTML = `
+    <div class="panel-head"><h4>نظرة عامة</h4></div>
+    <div class="stats-grid">
+      <div class="card stat-card"><b>${counts.projects}</b><span>إجمالي المشاريع</span></div>
+      <div class="card stat-card"><b>${counts.sections}</b><span>الأقسام</span></div>
+      <div class="card stat-card"><b>${counts.images}</b><span>الصور</span></div>
+      <div class="card stat-card"><b>${counts.pdf}</b><span>ملفات PDF</span></div>
+      <div class="card stat-card"><b>${counts.games}</b><span>الألعاب</span></div>
+      <div class="card stat-card"><b>${counts.messages}</b><span>الرسائل</span></div>
+    </div>
+    <div class="card" style="padding:1.5rem;">
+      <h4 style="margin-bottom:1rem;">آخر المشاريع المضافة</h4>
+      ${state.projects.slice().sort((a,b)=>new Date(b.dateAdded)-new Date(a.dateAdded)).slice(0,5).map(p => `
+        <div style="display:flex; justify-content:space-between; padding:.7rem 0; border-bottom:1px solid var(--c-border); font-size:.9rem;">
+          <span>${TYPE_META[p.type]?.icon||""} ${escapeHtml(p.title)}</span><span style="color:var(--c-text-dim);">${fmtDate(p.dateAdded)}</span>
+        </div>
+      `).join("") || `<p style="color:var(--c-text-dim);">لا توجد مشاريع بعد</p>`}
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------------------
+   21. ADMIN TAB SWITCHING + PANEL MOUNTING
+--------------------------------------------------------------------- */
+function ensureAdminPanelsMounted(){
+  let host = document.getElementById("admin-panels-host");
+  if(host) return host;
+  host = document.createElement("section");
+  host.className = "section";
+  host.id = "admin-panels-host";
+  host.style.paddingTop = "8rem";
+  host.innerHTML = `
+    <div class="container">
+      <div class="tab-panel active" id="panel-dashboard"></div>
+      <div class="tab-panel" id="panel-projects"></div>
+      <div class="tab-panel" id="panel-sections"></div>
+      <div class="tab-panel" id="panel-skills"></div>
+      <div class="tab-panel" id="panel-texts"></div>
+      <div class="tab-panel" id="panel-design"></div>
+      <div class="tab-panel" id="panel-messages"></div>
+    </div>
+  `;
+  document.querySelector("main").prepend(host);
+  return host;
+}
+function removeAdminPanels(){
+  document.getElementById("admin-panels-host")?.remove();
+}
+function switchAdminTab(tab){
+  state.adminTab = tab;
+  document.querySelectorAll("#admin-tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("panel-"+tab)?.classList.add("active");
+  const map = { dashboard: renderDashboard, projects: renderProjectsPanel, sections: renderSectionsPanel, skills: renderSkillsPanel, texts: renderTextsPanel, design: renderDesignPanel, messages: renderMessagesPanel };
+  map[tab] && map[tab]();
+  document.getElementById("admin-panels-host")?.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* ---------------------------------------------------------------------
+   22. CONTACT FORM
+--------------------------------------------------------------------- */
+function initContactForm(){
+  const form = document.getElementById("contact-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("cf-name").value.trim();
+    const email = document.getElementById("cf-email").value.trim();
+    const message = document.getElementById("cf-message").value.trim();
+    if(!name || !email || !message){ toast("يرجى تعبئة جميع الحقول", "error"); return; }
+    const record={ id: uid(), name, email, message, date: new Date().toISOString() };
+    try{ await sbFetch('/rest/v1/portfolio_messages',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id:record.id,name,email,message,created_at:record.date})});
+      if(state.isAdmin){state.messages.unshift(record);saveMessages();renderMessagesPanel();}
+      form.reset(); toast("تم إرسال رسالتك بنجاح، شكرًا لتواصلك!", "success"); renderDashboard();
+    }catch(err){ console.error(err); toast("تعذر إرسال الرسالة إلى قاعدة البيانات. حاول مرة أخرى.","error"); }
+  });
+}
+
+/* ---------------------------------------------------------------------
+   23. UI GLUE: NAVBAR SCROLL, REVEALS, SEARCH, ADMIN BINDINGS
+--------------------------------------------------------------------- */
+function scrollToId(id){
+  document.getElementById(id)?.scrollIntoView({ behavior:"smooth", block:"start" });
+  document.getElementById("nav-links").classList.remove("open");
+}
+window.scrollToId = scrollToId;
+
+let revealObserver = null;
+function observeReveals(){
+  if(!revealObserver){
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add("in-view"); revealObserver.unobserve(en.target); } });
+    }, { threshold: .12 });
+  }
+  document.querySelectorAll("[data-reveal]:not(.in-view)").forEach(el => revealObserver.observe(el));
+}
+
+function initNavbarScroll(){
+  const nav = document.getElementById("navbar");
+  const backTop = document.getElementById("back-to-top");
+  window.addEventListener("scroll", () => {
+    const scrolled = window.scrollY > 40;
+    nav.classList.toggle("scrolled", scrolled);
+    backTop.classList.toggle("show", window.scrollY > 500);
+  }, { passive: true });
+  backTop.addEventListener("click", () => window.scrollTo({ top:0, behavior:"smooth" }));
+}
+function initNavToggle(){
+  const toggle = document.getElementById("nav-toggle");
+  const links = document.getElementById("nav-links");
+  toggle.addEventListener("click", () => links.classList.toggle("open"));
+  links.querySelectorAll("a").forEach(a => a.addEventListener("click", () => links.classList.remove("open")));
+}
+function initSearch(){
+  const input = document.getElementById("project-search");
+  let t;
+  input.addEventListener("input", (e) => {
+    clearTimeout(t);
+    t = setTimeout(() => { state.searchQuery = e.target.value.trim(); renderProjects(); }, 220);
+  });
+}
+function initAdminBindings(){
+  document.getElementById("admin-fab").addEventListener("click", openLoginModal);
+  document.getElementById("btn-logout").addEventListener("click", () => {
+    confirmDialog("هل تريد تسجيل الخروج من لوحة التحكم؟", null, logout);
+  });
+  document.getElementById("admin-tabs").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-tab]");
+    if(btn) switchAdminTab(btn.dataset.tab);
+  });
+}
+
+/* ---------------------------------------------------------------------
+   24. MASTER RENDER
+--------------------------------------------------------------------- */
+async function renderAll(){
+  renderTexts();
+  await renderProfileImage();
+  await applyTheme();
+  renderFilters();
+  await renderProjects();
+  renderSkills();
+  renderCustomSections();
+
+  if(state.isAdmin){
+    ensureAdminPanelsMounted();
+    switchAdminTab(state.adminTab || "dashboard");
+  } else {
+    removeAdminPanels();
+  }
+  observeReveals();
+}
+
+/* ---------------------------------------------------------------------
+   25. INIT
+--------------------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", async () => {
+  initNavbarScroll();
+  initNavToggle();
+  initSearch();
+  initContactForm();
+  initAdminBindings();
+
+  await loadRemoteContent();
+  if(await verifyAdminSession()) await enterAdminMode();
+  await renderAll();
+
+  setTimeout(() => { document.getElementById("loading-screen").classList.add("hidden"); }, 500);
+});
+
+/* ---------------------------------------------------------------------
+   26. FUTURE MIGRATION NOTE (Firebase-ready abstraction)
+   ---------------------------------------------------------------------
+   لتحويل النظام لاحقًا إلى Firebase:
+   - استبدل LocalStore بمكتبة تتصل بـ Firestore (نفس واجهة get/set).
+   - استبدل FileStore بمكتبة تتصل بـ Firebase Storage (نفس واجهة put/get/delete،
+     مع تخزين رابط التنزيل بدل Blob محلي).
+   تم ربط المحتوى والرسائل والمصادقة عبر Supabase. الصور والملفات المرفوعة ما زالت في IndexedDB على الجهاز الحالي، وتحتاج خطوة Storage منفصلة لمزامنتها عبر الأجهزة.
+--------------------------------------------------------------------- */
+})();
+</script>
+</body>
+</html>
